@@ -1,0 +1,25 @@
+# wpa_supplicant
+#
+# wpa_supplicant is built with the AIDL control interface and declares
+# android.hardware.wifi.supplicant.ISupplicant/default in its own VINTF
+# fragment, but installs no rc unless
+# WIFI_HIDL_UNIFIED_SUPPLICANT_SERVICE_RC_ENTRY=true.  Without a service
+# declaring the AIDL name Wi-Fi cannot start.  Keep only one
+# `service wpa_supplicant` definition: init ignores a second one.
+
+on post-fs-data
+    # Control sockets (-O below) and the conf the AIDL HAL creates from the
+    # template; nothing else creates the wpa path.
+    mkdir /data/vendor/wifi 0770 wifi wifi
+    mkdir /data/vendor/wifi/wpa 0770 wifi wifi
+    mkdir /data/vendor/wifi/wpa/sockets 0770 wifi wifi
+
+service wpa_supplicant /vendor/bin/hw/wpa_supplicant \
+    -O/data/vendor/wifi/wpa/sockets -puse_p2p_group_interface=1 \
+    -g@android:wpa_wlan0
+    interface aidl android.hardware.wifi.supplicant.ISupplicant/default
+    class main
+    socket wpa_wlan0 dgram 660 wifi wifi
+    group system wifi inet
+    disabled
+    oneshot

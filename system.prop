@@ -1,0 +1,33 @@
+ro.hardware=mt6755
+ro.remeizu.board_family=m3note
+ro.sf.lcd_density=480
+qemu.hw.mainkeys=0
+
+# No GL preload in zygote (Mali N driver); MTK RIL/AT/GNSS log tags at INFO so
+# that ICCID/IMSI/numbers/AT commands and coordinates are not logged.
+ro.zygote.disable_gl_preload=true
+log.tag.AT=I
+log.tag.hal2mnl=I
+log.tag.RIL=I
+log.tag.RILC=I
+log.tag.RILC-MTK=I
+log.tag.RILC-RP=I
+log.tag.RIL-CC=I
+log.tag.RIL-DATA=I
+log.tag.RIL-DSBP=I
+log.tag.RIL-EMBMS=I
+log.tag.RIL-NW=I
+log.tag.RIL-OEM=I
+log.tag.RIL-PHB=I
+log.tag.RIL-RP=I
+log.tag.RIL-SIM=I
+log.tag.RIL-SMS=I
+log.tag.RIL-SS=I
+log.tag.RIL-STK=I
+log.tag.RIL-UFP=I
+
+# No GWP-ASan in the camera provider: shims/camera_n.cpp builds the 160-byte
+# A13 GraphicBuffer in a 136-byte N allocation, which fits only because
+# jemalloc rounds up; a sampled allocation is exact and would trip the
+# shim's size check.
+libc.debug.gwp_asan.process_sampling.android.hardware.camera.provider@2.4-service=0

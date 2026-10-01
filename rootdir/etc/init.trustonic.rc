@@ -1,0 +1,31 @@
+# MobiCore (Trustonic) TEE daemon: the TEE keymaster/gatekeeper
+# (keystore.mt6755.so -> libMcTeeKeymaster.so) talk to the secure world
+# through it.
+on fs
+    chmod 0600 /dev/mobicore
+    chown system system /dev/mobicore
+    chmod 0666 /dev/mobicore-user
+    chown system system /dev/mobicore-user
+    chmod 0666 /dev/t-base-tui
+    chown system system /dev/t-base-tui
+    export MC_AUTH_TOKEN_PATH /efs
+    # mcDriverDaemon floods logcat with scheduler INFO lines on this build.
+    setprop persist.sys.log_reject_level 5
+    # Start only when the kernel has a MobiCore driver; without it both boards
+    # use the software keymaster.
+    exec -- /system/bin/sh -c "test -c /dev/mobicore && setprop vendor.m3note.mobicore 1"
+
+on property:vendor.m3note.mobicore=1
+    start mobicore
+
+on post-fs-data
+    mkdir /data/misc/mcRegistry 0775 system system
+    mkdir /data/misc/mcRegistry/TbStorage 0775 system system
+    restorecon_recursive /data/misc/mcRegistry
+
+service mobicore /vendor/bin/mcDriverDaemon -r /vendor/etc/mcRegistry/020f0000000000000000000000000000.drbin -r /vendor/etc/mcRegistry/05120000000000000000000000000000.drbin -r /vendor/etc/mcRegistry/070b0000000000000000000000000000.drbin -r /vendor/etc/mcRegistry/020b0000000000000000000000000000.drbin -r /vendor/etc/mcRegistry/030b0000000000000000000000000000.drbin -r /vendor/etc/mcRegistry/5a7b770d08d14b8fb00f53de4173145a.drbin -r /vendor/etc/mcRegistry/05070000000000000000000000000000.drbin
+    user system
+    group system
+    class core
+    disabled
+    oneshot

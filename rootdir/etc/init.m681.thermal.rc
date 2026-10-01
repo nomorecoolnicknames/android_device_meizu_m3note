@@ -1,0 +1,18 @@
+# MTK thermal target daemon.
+#
+# The kernel runs the stock ATM policy (cATM+), where the target junction
+# temperature comes only from thermalloadalgod over NETLINK_TAD (27).
+# Without it older kernels set a 0 C target and throttle to the minimum
+# budget at the first trip.  thermal_manager is not started: the stock
+# thermal.conf values are already the kernel defaults.
+
+service thermalloadalgod /vendor/bin/thermalloadalgod
+    class main
+    user system
+    group system
+    disabled
+
+# Both boards: L681 uses the M681 daemon and libthermalalgo.so (same
+# protocol; the L681 stock library would need xlog).
+on property:ro.vendor.meizu.profile_ready=1
+    start thermalloadalgod

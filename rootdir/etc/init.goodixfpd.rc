@@ -1,0 +1,16 @@
+# Goodix fingerprint daemon.  Chain: system_server ->
+# android.hardware.biometrics.fingerprint@2.0-service ->
+# /vendor/lib64/hw/fingerprint.default.so -> this daemon, which publishes
+# IGoodixFingerprintDaemon and issues the GF_IOC_INPUT_KEY_EVENT ioctl on
+# /dev/goodix_fp that turns a tap into BACK.  The TEE side goes through
+# libMcClient -> /dev/mobicore-user -> mobicore.
+on post-fs-data
+    # Template/calibration store: /data/gf_data/{authenticate,base/finger_base,
+    # base/nav_base,consistency,enroll,navigation,test_sensor}/ are string
+    # literals in libgf_hal.so; libgf_hal makes the subdirs, init makes the root.
+    mkdir /data/gf_data 0700 system system
+
+service goodixfpd /vendor/bin/goodixfingerprintd
+    class main
+    user system
+    group system

@@ -1,0 +1,33 @@
+# MTK WMT (CONSYS Wi-Fi/BT/GPS) loaders.
+#
+# wmt_loader probes the chip through /dev/wmtdetect and issues
+# COMBO_IOCTL_DO_MODULE_INIT, which creates /dev/stpwmt, /dev/wmtWifi and
+# /dev/stpbt; wmt_launcher stays resident and loads the CONSYS firmware from
+# /vendor/firmware.
+#
+# Not started at boot by default: start manually with
+#   setprop vendor.m681.wmt.start 1
+# The N blobs need liblog via TARGET_LD_SHIM_LIBS (BoardConfig.mk).
+service wmt_loader /vendor/bin/wmt_loader
+    class core
+    user root
+    group root
+    disabled
+    oneshot
+
+service wmt_launcher /vendor/bin/wmt_launcher -p /vendor/firmware/
+    class core
+    user system
+    group system
+    disabled
+
+on property:vendor.m681.wmt.start=1
+    start wmt_loader
+    start wmt_launcher
+
+# Opt-in boot start: persist.vendor.m681.wmt.autostart=1 starts the chain on
+# every M681 boot after sys.boot_completed, so a CONSYS hang cannot cause a
+# boot loop.  Bluetooth and Wi-Fi need it.
+on property:sys.boot_completed=1 && property:persist.vendor.m681.wmt.autostart=1 && property:ro.vendor.meizu.profile=m681
+    start wmt_loader
+    start wmt_launcher

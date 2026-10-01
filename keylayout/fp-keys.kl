@@ -1,0 +1,10 @@
+# Goodix GF516M navigation keys (GF_IOC_INPUT_KEY_EVENT).  Only tap = BACK is
+# used by the driver; the other entries cover the remaining navigation events.
+key 158   BACK
+key 172   HOME
+key 139   MENU
+key 103   DPAD_UP
+key 108   DPAD_DOWN
+key 105   DPAD_LEFT
+key 106   DPAD_RIGHT
+key 28    DPAD_CENTER

@@ -1,0 +1,93 @@
+# SPDX-License-Identifier: Apache-2.0
+
+LOCAL_PATH := device/meizu/m3note
+
+# Soong namespaces
+PRODUCT_SOONG_NAMESPACES += $(LOCAL_PATH)
+
+# Packages
+PRODUCT_PACKAGES += libwpa_client wpa_supplicant hostapd android.hardware.health@2.1-impl android.hardware.health@2.1-service
+
+# Configs
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/rootdir/etc/fstab.mt6755:$(TARGET_COPY_OUT_RAMDISK)/fstab.mt6755 \
+    $(LOCAL_PATH)/rootdir/etc/fstab.mt6755:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.mt6755 \
+    $(LOCAL_PATH)/rootdir/etc/init.m3note.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.m3note.rc \
+    $(LOCAL_PATH)/keylayout/mtk-kpd.kl:$(TARGET_COPY_OUT_VENDOR)/usr/keylayout/mtk-kpd.kl \
+    $(LOCAL_PATH)/wifi/wpa_supplicant.conf:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/wpa_supplicant.conf \
+    $(LOCAL_PATH)/wifi/p2p_supplicant.conf:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/p2p_supplicant.conf \
+    frameworks/native/data/etc/handheld_core_hardware.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/handheld_core_hardware.xml
+
+# Vendor blobs
+$(call inherit-product, vendor/meizu/m3note/m3note-vendor.mk)
+
+# Init
+# Board init, USB gadget, device nodes and the MTK service rc files.
+# CONSYS (wmt_*) is started by property (vendor.m681.wmt.start=1).
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/rootdir/etc/init/hw/init.mt6755.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/hw/init.mt6755.rc \
+    $(LOCAL_PATH)/rootdir/etc/init/hw/init.mt6755.usb.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/hw/init.mt6755.usb.rc \
+    $(LOCAL_PATH)/rootdir/etc/ueventd.mt6755.rc:$(TARGET_COPY_OUT_VENDOR)/etc/ueventd.rc \
+    $(LOCAL_PATH)/rootdir/etc/init.m681.spm.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.m681.spm.rc \
+    $(LOCAL_PATH)/rootdir/etc/init.m681.wifi.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.m681.wifi.rc \
+    $(LOCAL_PATH)/rootdir/etc/init.m681.connectivity.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.m681.connectivity.rc \
+    $(LOCAL_PATH)/rootdir/etc/init.m681.sensors.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.m681.sensors.rc \
+    $(LOCAL_PATH)/rootdir/etc/init.m681.dvfs.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.m681.dvfs.rc \
+    $(LOCAL_PATH)/rootdir/etc/init.l681.dvfs.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.l681.dvfs.rc \
+    $(LOCAL_PATH)/rootdir/etc/init.m681.gps.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.m681.gps.rc \
+    $(LOCAL_PATH)/rootdir/etc/init.m681.thermal.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.m681.thermal.rc \
+    $(LOCAL_PATH)/rootdir/etc/init.trustonic.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.trustonic.rc
+
+# HIDL HALs
+# Vendor HAL services wrapping the MT6755 blobs.
+PRODUCT_PACKAGES += \
+    android.hardware.graphics.allocator@2.0-impl \
+    android.hardware.graphics.allocator@2.0-service \
+    android.hardware.graphics.composer@2.1-service \
+    android.hardware.graphics.mapper@2.0-impl-2.1 \
+    android.hardware.memtrack@1.0-impl \
+    android.hardware.memtrack@1.0-service \
+    android.hardware.renderscript@1.0-impl \
+    android.hardware.light@2.0-impl \
+    android.hardware.light@2.0-service \
+    android.hardware.audio@2.0-impl \
+    android.hardware.audio@2.0-service \
+    android.hardware.audio.effect@2.0-impl \
+    android.hardware.audio@6.0-impl \
+    android.hardware.audio.effect@6.0-impl \
+    android.hardware.keymaster@3.0-impl \
+    android.hardware.keymaster@3.0-service \
+    android.hardware.gatekeeper@1.0-service.software \
+    android.hardware.drm@1.0-impl \
+    android.hardware.drm@1.0-service \
+    android.hardware.drm@1.4-service.clearkey \
+    android.hardware.gnss@1.0-impl \
+    android.hardware.gnss@1.0-service \
+    android.hardware.camera.provider@2.4-impl \
+    android.hardware.camera.provider@2.4-service \
+    android.hardware.sensors@1.0-impl \
+    android.hardware.sensors@1.0-service \
+    android.hardware.wifi@1.0-service \
+    libwifi-hal-mt66xx \
+    wificond
+
+# Permissions
+PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.hardware.bluetooth.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.bluetooth.xml \
+    frameworks/native/data/etc/android.hardware.bluetooth_le.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.bluetooth_le.xml \
+    frameworks/native/data/etc/android.hardware.location.gps.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.location.gps.xml \
+    frameworks/native/data/etc/android.hardware.opengles.aep.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.opengles.aep.xml \
+    frameworks/native/data/etc/android.hardware.sensor.accelerometer.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.accelerometer.xml \
+    frameworks/native/data/etc/android.hardware.sensor.compass.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.compass.xml \
+    frameworks/native/data/etc/android.hardware.sensor.gyroscope.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.gyroscope.xml \
+    frameworks/native/data/etc/android.hardware.sensor.light.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.light.xml \
+    frameworks/native/data/etc/android.hardware.sensor.proximity.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.proximity.xml \
+    frameworks/native/data/etc/android.hardware.telephony.gsm.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.telephony.gsm.xml \
+    frameworks/native/data/etc/android.hardware.touchscreen.multitouch.jazzhand.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.touchscreen.multitouch.jazzhand.xml \
+    frameworks/native/data/etc/android.hardware.usb.host.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.usb.host.xml \
+    frameworks/native/data/etc/android.hardware.wifi.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.wifi.xml \
+    frameworks/native/data/etc/android.hardware.wifi.direct.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.wifi.direct.xml
+
+# Symlinks
+PRODUCT_PACKAGES += m3note_vendor_symlinks
+

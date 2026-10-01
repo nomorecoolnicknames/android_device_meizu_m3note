@@ -1,0 +1,107 @@
+# Modem and RIL chain, M681 only (ro.vendor.meizu.profile, set by libinit).
+#
+#  - ril.muxreport is seeded to 0, else the MTK libril's "reset modem once
+#    after boot" takes the modem down;
+#  - ccci_mdinit runs as root and only after NVRAM is restored
+#    (service.nvram_init=Ready);
+#  - the mux starts on mtk.md1.status=ready; rild starts with it and retries
+#    until /dev/radio/ptty* exist.
+#
+# MD1 only: the C2K side (MD3, viarild, rilproxy) is not started.  Service
+# names as stock: ccci_mdinit starts/stops ril-daemon-mtk by name.
+
+on post-fs-data && property:ro.vendor.meizu.profile=m681
+    setprop ril.muxreport 0
+    # gsm0710muxd creates its channel ptys under /dev/radio.
+    mkdir /dev/radio 0770 radio radio
+    restorecon /dev/radio
+    # /data/nvram -> /nvdata (init.mt6755.rc, hw/, parsed before this file).
+    mkdir /data/nvram/md 0770 root system
+    mkdir /data/ccci_cfg 0770 system radio
+    restorecon /data/ccci_cfg
+    chown radio radio /sys/kernel/ccci/boot
+    chown radio radio /dev/ttyC0
+    # nvram_daemon copies fstab* from / into /data/nvram and libnvram parses
+    # /data/nvram/fstab.<ro.hardware>; on A13 / has no fstab, and without the
+    # copy service.nvram_init never becomes Ready.
+    copy /vendor/etc/fstab.mt6755 /data/nvram/fstab.mt6755
+    chmod 0644 /data/nvram/fstab.mt6755
+    start nvram_daemon
+    start ccci_fsd
+
+on property:service.nvram_init=Ready && property:ro.vendor.meizu.profile=m681
+    start ccci_mdinit
+
+on property:mtk.md1.status=ready && property:ro.vendor.meizu.profile=m681
+    chown radio radio /dev/ttyC0
+    start terservice
+    start gsm0710muxd
+    start ril-daemon-mtk
+
+on property:ril.muxreport=1 && property:ro.vendor.meizu.profile=m681
+    start muxreport-daemon
+
+service nvram_daemon /vendor/bin/nvram_daemon
+    class main
+    user root
+    group system
+    disabled
+    oneshot
+
+service ccci_fsd /vendor/bin/ccci_fsd 0
+    class main
+    user radio
+    group radio system
+    disabled
+    oneshot
+
+service ccci_mdinit /vendor/bin/ccci_mdinit 0
+    class main
+    user root
+    group radio system
+    disabled
+    oneshot
+
+service gsm0710muxd /vendor/bin/gsm0710muxd -s /dev/ttyC0 -f 512 -n 8 -m basic
+    class main
+    user root
+    group radio cache inet misc
+    disabled
+    oneshot
+
+service muxreport-daemon /vendor/bin/muxreport
+    class main
+    user radio
+    group radio cache inet misc
+    disabled
+    oneshot
+
+service terservice /vendor/bin/terservice
+    class main
+    user radio
+    group radio system inet
+    disabled
+    oneshot
+
+# MTK Oreo rild (ril/); rild.libpath / rild.libargs are in vendor.prop.
+service ril-daemon-mtk /vendor/bin/hw/rild
+    class main
+    socket rild stream 660 root radio
+    socket rild2 stream 660 root radio
+    socket rild3 stream 660 root radio
+    socket rild4 stream 660 root radio
+    socket rild-ims stream 660 root radio
+    socket rild-debug stream 660 radio system
+    socket rild-oem stream 660 radio system
+    socket rild-mtk-ut stream 660 radio net_bt
+    socket rild-mtk-ut-2 stream 660 radio net_bt
+    socket rild-mtk-modem stream 660 radio system
+    socket rild-atci stream 660 root radio
+    socket rild-mal stream 660 radio system
+    socket rild-mal-at stream 660 radio system
+    socket rild-vsim stream 660 root radio
+    socket sap_uim_socket1 stream 660 bluetooth bluetooth
+    user root
+    group radio cache inet misc audio sdcard_r sdcard_rw log system
+    disabled
+    oneshot

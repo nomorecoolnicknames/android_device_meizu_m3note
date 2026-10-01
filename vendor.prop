@@ -1,0 +1,59 @@
+# Vendor properties, installed to /vendor/build.prop (TARGET_VENDOR_PROP).
+# Only properties that belong to the vendor partition; everything that
+# affects the framework stays in system.prop.
+
+# VINTF
+# Skip the kernel part of the VINTF compatibility check: the 4.9 kernel
+# does not match the FCM kernel requirements, which would show the
+# "internal problem" dialog on every boot.
+ro.vendor.vintf.legacy_kernel=true
+
+# Audio
+# audio.primary.mt6755.so is a Nougat build: its audio_hw_device /
+# audio_stream_* structs end before fields read by newer HIDL wrappers.
+# Report NOT_SUPPORTED for those methods instead of reading past the struct.
+ro.vendor.audio.legacy_nougat_abi=1
+
+# Display
+# hw_get_module("hwcomposer") checks ro.hardware.hwcomposer before
+# ro.board.platform: load hwcomposer.forge (hwcomposer/) instead of the
+# hwcomposer.mt6755 blob, which cannot present frames on Android 13.
+ro.hardware.hwcomposer=forge
+
+# Use the AOSP remote submix module: the legacy audio.r_submix.mt6755.so
+# needs libnbaio.so, which is not reachable from the vendor namespace.
+ro.hardware.audio.r_submix=default
+# USB audio: the L681 blob set has no audio.usb.mt6755.so; the AOSP module
+# works on both boards.
+ro.hardware.audio.usb=default
+
+# Camera
+# Android 13 cameraserver refuses HAL1 devices; force the camera module to
+# report device version 3.2 so the provider opens the MTK HAL3 pipeline.
+debug.camera.force_device=3
+
+# ADB
+# Vendor build.prop is read after system's ro.adb.secure and overrides it.
+ro.adb.secure=0
+
+# Telephony
+# Read by rild (ril/rild): without rild.libpath it falls back to the 32-bit
+# /vendor/lib/mtk-ril.so.  rild runs only on M681 (init.m681.modem.rc).
+rild.libpath=/vendor/lib64/mtk-ril.so
+rild.libargs=-d /dev/ttyC0
+ril.specific.sm_cause=0
+ril.external.md=0
+ril.telephony.mode=0
+ril.current.share_modem=2
+ro.mtk_enable_md1=1
+ro.mtk_lte_support=1
+ro.mtk_gemini_support=1
+ro.telephony.sim.count=2
+persist.radio.multisim.config=dsds
+persist.radio.default.sim=0
+persist.radio.fd.counter=15
+persist.radio.fd.off.counter=5
+persist.radio.fd.r8.counter=15
+persist.radio.fd.off.r8.counter=5
+persist.gemini.sim_num=2
+ro.gemini.smart_sim_switch=false

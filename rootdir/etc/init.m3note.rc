@@ -1,0 +1,9 @@
+# Common init for both boards.
+on boot
+    setprop sys.usb.config adb
+
+# End MTK bootprof: stock N does this from the framework at boot completion;
+# otherwise the kernel keeps printing every log line to the UART at 921600
+# baud, which busy-waits the printing CPU.
+on property:sys.boot_completed=1
+    write /proc/bootprof 0

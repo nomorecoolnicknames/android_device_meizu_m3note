@@ -1,0 +1,24 @@
+# MTK GNSS daemon.  The GNSS HAL (gps.mt6755.so) only talks to mnld; without
+# it there is no fix.  /dev/stpgps exists only after the WMT chain
+# (init.m681.connectivity.rc), so mnld follows wmt_launcher.
+# Not started: mtk_agpsd (AGPS/SUPL; needs ICU 56 libicuuc, which the vendor
+# namespace cannot reach) and MPED.
+
+on post-fs-data
+    mkdir /data/gps_mnl 0771 gps system
+    mkdir /data/mpe_mnl 0771 gps system
+    mkdir /data/misc/gps 0770 gps system
+    mkdir /data/agps_supl 0771 gps system
+
+service mnld /vendor/bin/mnld
+    class main
+    user gps
+    group gps inet misc sdcard_rw sdcard_r media_rw system radio
+    socket mnld stream 660 gps system
+    disabled
+
+on property:init.svc.wmt_launcher=running && property:ro.vendor.meizu.profile_ready=1
+    start mnld
+
+on property:init.svc.wmt_launcher=stopped
+    stop mnld

@@ -1,0 +1,10 @@
+# MTK msensord, M681 only: on L681 the blob is not present.
+service msensord /vendor/bin/msensord
+    class core
+    user system
+    group system input
+    oneshot
+    disabled
+
+on property:ro.vendor.meizu.profile=m681 && property:sys.boot_completed=1
+    start msensord

@@ -1,0 +1,44 @@
+# L681 CPU DVFS ceiling, mode and LL overclock; same kernel nodes as
+# init.m681.dvfs.rc, with separate properties per board.
+#
+#   persist.vendor.l681.cpu_max   1196 (default) | stock (LL 1001 / big 1807)
+#   persist.vendor.l681.cpu_mode  auto (default) | performance
+#   persist.vendor.l681.ll_oc     0 (default) .. 5, read when cpufreq arms
+#
+# The kernel enables full DVFS on L681 only for a matching efuse bin
+# (/sys/module/mt_cpufreq/parameters/forge_full_dvfs, read-only); otherwise
+# it refuses rows above the boot ceiling (big 1196 / LL 689), so the writes
+# below cannot lift it on an unsupported board.
+#
+# A boot that applies the stock ceiling sets persist.vendor.l681.cpu_trial=1
+# and an orderly shutdown clears it; if it was not cleared, the next boot
+# falls back to 1196 (cpu_max_fallback records why).
+
+on property:ro.persistent_properties.ready=true && property:ro.vendor.meizu.profile=l681
+    setprop vendor.l681.cpu_prev_trial ${persist.vendor.l681.cpu_trial:-0}
+
+on property:sys.boot_completed=1 && property:vendor.l681.cpu_prev_trial=1 && property:persist.vendor.l681.cpu_max=stock
+    setprop persist.vendor.l681.cpu_max 1196
+    setprop persist.vendor.l681.cpu_max_fallback unclean-shutdown-at-stock
+    setprop persist.vendor.l681.cpu_trial 0
+    setprop vendor.l681.cpu_prev_trial 0
+
+on property:sys.boot_completed=1 && property:vendor.l681.cpu_prev_trial=0 && property:persist.vendor.l681.cpu_max=stock
+    setprop persist.vendor.l681.cpu_trial 1
+    write /sys/module/forge_therm_guard/parameters/forge_tg_ceiling_khz 0
+    write /sys/module/mt_cpufreq/parameters/forge_ll_oc ${persist.vendor.l681.ll_oc:-0}
+    write /sys/module/mt_cpufreq/parameters/forge_cpu_max_ll_khz 1599000
+    write /sys/module/mt_cpufreq/parameters/forge_cpu_max_big_khz 1807000
+
+on property:sys.boot_completed=1 && property:persist.vendor.l681.cpu_max=1196 && property:ro.vendor.meizu.profile=l681
+    write /sys/module/mt_cpufreq/parameters/forge_cpu_max_ll_khz 689000
+    write /sys/module/mt_cpufreq/parameters/forge_cpu_max_big_khz 1196000
+
+on shutdown && property:ro.vendor.meizu.profile=l681
+    setprop persist.vendor.l681.cpu_trial 0
+
+on property:sys.boot_completed=1 && property:persist.vendor.l681.cpu_mode=performance && property:ro.vendor.meizu.profile=l681
+    write /sys/module/mt_cpufreq/parameters/forge_cpu_perf 1
+
+on property:sys.boot_completed=1 && property:persist.vendor.l681.cpu_mode=auto && property:ro.vendor.meizu.profile=l681
+    write /sys/module/mt_cpufreq/parameters/forge_cpu_perf 0
