@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: Apache-2.0
+# SELinux runs permissive (androidboot.selinux=permissive) with
+# SELINUX_IGNORE_NEVERALLOWS, because the MTK Nougat blobs violate public-policy
+# neverallows.  The types below are declarations and labels only.
+
+# Mount points on the system root (BOARD_ROOT_EXTRA_FOLDERS) for /nvdata,
+# /protect_f and /protect_s; system.img does not pack without labels for them.
+type nvdata_file, file_type, data_file_type, core_data_file_type;
+type protect_f_data_file, file_type, data_file_type;
+type protect_s_data_file, file_type, data_file_type;
+
+# SPM and WMT
+type spm_device, dev_type;
+type stpwmt_device, dev_type;
+type wmtdetect_device, dev_type;
+type wmtWifi_device, dev_type;
+type stpbt_device, dev_type;
+
+# Fingerprint (Goodix GF516M) and its template store: the daemon runs as system
+# and writes /data/gf_data, labelled so it is not system_data_file.
+type fingerprint_device, dev_type;
+type gf_data_file, file_type, data_file_type, core_data_file_type;

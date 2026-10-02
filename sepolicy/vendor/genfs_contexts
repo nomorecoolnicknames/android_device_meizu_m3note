@@ -1,0 +1,8 @@
+# The battery observer registers its battery and usb power supplies without a
+# parent device, so they live under /sys/devices/virtual/power_supply; health
+# needs them labelled sysfs_batteryinfo.
+genfscon sysfs /devices/virtual/power_supply u:object_r:sysfs_batteryinfo:s0
+
+# LED-class vibrator (DT node vibrator@0), written by the AIDL vibrator
+# service (hal_vibrator_default).
+genfscon sysfs /devices/platform/vibrator@0/leds/vibrator u:object_r:sysfs_vibrator:s0

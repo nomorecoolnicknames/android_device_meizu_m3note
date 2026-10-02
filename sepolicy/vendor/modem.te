@@ -1,0 +1,31 @@
+# SPDX-License-Identifier: Apache-2.0
+# Modem and RIL chain (init.m681.modem.rc).  Domain and type declarations
+# only: init refuses a vendor service without a domain transition even in
+# permissive mode.  rild uses the AOSP rild domain.
+
+type nvram_daemon, domain;
+type nvram_daemon_exec, exec_type, vendor_file_type, file_type;
+init_daemon_domain(nvram_daemon)
+
+type ccci_fsd, domain;
+type ccci_fsd_exec, exec_type, vendor_file_type, file_type;
+init_daemon_domain(ccci_fsd)
+
+type ccci_mdinit, domain;
+type ccci_mdinit_exec, exec_type, vendor_file_type, file_type;
+init_daemon_domain(ccci_mdinit)
+
+type gsm0710muxd, domain;
+type gsm0710muxd_exec, exec_type, vendor_file_type, file_type;
+init_daemon_domain(gsm0710muxd)
+
+type muxreport, domain;
+type muxreport_exec, exec_type, vendor_file_type, file_type;
+init_daemon_domain(muxreport)
+
+type terservice, domain;
+type terservice_exec, exec_type, vendor_file_type, file_type;
+init_daemon_domain(terservice)
+
+type ccci_device, dev_type;
+type ccci_cfg_file, file_type, data_file_type, core_data_file_type;

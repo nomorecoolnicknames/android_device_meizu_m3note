@@ -1,0 +1,5 @@
+# Power HAL: reads cpuinfo_min_freq / scaling_max_freq and writes
+# scaling_min_freq on policy0/policy4 (0664 system, ueventd.mt6755.rc).
+allow hal_power_default sysfs_devices_system_cpu:dir r_dir_perms;
+allow hal_power_default sysfs_devices_system_cpu:file rw_file_perms;
+allow hal_power_default sysfs_devices_system_cpu:lnk_file r_file_perms;

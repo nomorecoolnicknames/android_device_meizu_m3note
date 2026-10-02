@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+# mnld (init.m681.gps.rc).  Declarations only: init refuses a vendor service
+# without a domain transition even in permissive mode.
+
+type mnld, domain;
+type mnld_exec, exec_type, vendor_file_type, file_type;
+init_daemon_domain(mnld)
+
+type stpgps_device, dev_type;
+type mnld_data_file, file_type, data_file_type, core_data_file_type;

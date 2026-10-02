@@ -1,0 +1,50 @@
+/(vendor|system/vendor)/bin/spm_loader    u:object_r:spm_loader_exec:s0
+/(vendor|system/vendor)/bin/wmt_loader    u:object_r:wmt_loader_exec:s0
+/(vendor|system/vendor)/bin/wmt_launcher    u:object_r:wmt_launcher_exec:s0
+/file_contexts\.bin    u:object_r:file_contexts_file:s0
+# Mount points and MTK device nodes
+/nvdata             u:object_r:nvdata_file:s0
+/nvdata(/.*)?       u:object_r:nvdata_file:s0
+/protect_f          u:object_r:protect_f_data_file:s0
+/protect_s          u:object_r:protect_s_data_file:s0
+/dev/spm                              u:object_r:spm_device:s0
+/dev/stpwmt                           u:object_r:stpwmt_device:s0
+/dev/wmtdetect                        u:object_r:wmtdetect_device:s0
+/dev/wmtWifi                          u:object_r:wmtWifi_device:s0
+/dev/stpbt                            u:object_r:stpbt_device:s0
+/(vendor|system/vendor)/bin/hw/android\.hardware\.vibrator-service\.m3note    u:object_r:hal_vibrator_default_exec:s0
+/(vendor|system/vendor)/bin/mcDriverDaemon    u:object_r:mobicore_exec:s0
+# Fingerprint (Goodix): nodes in ueventd.mt6755.rc, store in init.goodixfpd.rc
+/dev/goodix_fp            u:object_r:fingerprint_device:s0
+/dev/goodix_fp_spi        u:object_r:fingerprint_device:s0
+/data/gf_data(/.*)?       u:object_r:gf_data_file:s0
+/(vendor|system/vendor)/bin/goodixfingerprintd    u:object_r:hal_fingerprint_default_exec:s0
+/(vendor|system/vendor)/bin/hw/android\.hardware\.biometrics\.fingerprint@2\.0-service(\.m3note)?    u:object_r:hal_fingerprint_default_exec:s0
+# Modem and RIL chain (modem.te, init.m681.modem.rc).  The per-board profile
+# copies under /vendor/meizu/<board>/ get the same labels.
+/(vendor|system/vendor)/bin/nvram_daemon    u:object_r:nvram_daemon_exec:s0
+/(vendor|system/vendor)/bin/ccci_fsd    u:object_r:ccci_fsd_exec:s0
+/(vendor|system/vendor)/bin/ccci_mdinit    u:object_r:ccci_mdinit_exec:s0
+/(vendor|system/vendor)/bin/gsm0710muxd    u:object_r:gsm0710muxd_exec:s0
+/(vendor|system/vendor)/bin/muxreport    u:object_r:muxreport_exec:s0
+/(vendor|system/vendor)/bin/terservice    u:object_r:terservice_exec:s0
+/dev/ccci.*               u:object_r:ccci_device:s0
+/dev/ttyC[0-9]*           u:object_r:ccci_device:s0
+/dev/ccci_pcm_rx          u:object_r:audio_device:s0
+/dev/ccci_pcm_tx          u:object_r:audio_device:s0
+/dev/ccci_aud             u:object_r:audio_device:s0
+/dev/radio(/.*)?          u:object_r:radio_device:s0
+/data/ccci_cfg(/.*)?      u:object_r:ccci_cfg_file:s0
+# Bluetooth HAL (bluetooth/), M681 profile
+/(vendor|system/vendor)/bin/hw/android\.hardware\.bluetooth@1\.0-service\.m3note    u:object_r:hal_bluetooth_default_exec:s0
+# GNSS daemon (gnss.te, init.m681.gps.rc)
+/(vendor|system/vendor)/bin/mnld    u:object_r:mnld_exec:s0
+/dev/stpgps               u:object_r:stpgps_device:s0
+/data/gps_mnl(/.*)?       u:object_r:mnld_data_file:s0
+/data/mpe_mnl(/.*)?       u:object_r:mnld_data_file:s0
+/data/misc/gps(/.*)?      u:object_r:mnld_data_file:s0
+/data/agps_supl(/.*)?     u:object_r:mnld_data_file:s0
+# ATM target daemon (thermal.te, init.m681.thermal.rc)
+/(vendor|system/vendor)/bin/thermalloadalgod    u:object_r:thermalloadalgod_exec:s0
+# Power HAL (power-fleet/, power.te)
+/(vendor|system/vendor)/bin/hw/android\.hardware\.power-service\.meizu  u:object_r:hal_power_default_exec:s0

@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+
+type wmt_loader, domain;
+type wmt_loader_exec, exec_type, vendor_file_type, file_type;
+init_daemon_domain(wmt_loader)
+
+type wmt_launcher, domain;
+type wmt_launcher_exec, exec_type, vendor_file_type, file_type;
+init_daemon_domain(wmt_launcher)
+
+# /dev/wmtWifi (Wi-Fi power on/off): the kernel creates the node when
+# wmt_loader runs, after ueventd's cold boot, so ueventd relabels it.  Only the
+# Wi-Fi HAL writes it.
+allow ueventd device:chr_file relabelfrom;
+allow ueventd wmtWifi_device:chr_file relabelto;
+allow hal_wifi_default wmtWifi_device:chr_file rw_file_perms;
