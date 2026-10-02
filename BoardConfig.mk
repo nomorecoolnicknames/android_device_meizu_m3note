@@ -91,6 +91,12 @@ TARGET_USES_QCOM_BSP := false
 TARGET_SYSTEM_PROP := $(DEVICE_PATH)/system.prop
 TARGET_VENDOR_PROP += $(DEVICE_PATH)/vendor.prop
 
+# VINTF
+# Per-SKU manifests, selected by ro.boot.product.vendor.sku: keymaster differs.
+DEVICE_MANIFEST_SKUS := m681 l681
+DEVICE_MANIFEST_M681_FILES := $(DEVICE_PATH)/vintf/manifest_m681.xml
+DEVICE_MANIFEST_L681_FILES := $(DEVICE_PATH)/vintf/manifest_l681.xml
+
 # Malloc
 # N camera blobs allocate GraphicBuffer with the N size (136 bytes on arm)
 # while the A13 object is 160; jemalloc rounds 136 up to 160, Scudo does not.

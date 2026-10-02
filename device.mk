@@ -5,6 +5,9 @@ LOCAL_PATH := device/meizu/m3note
 # Soong namespaces
 PRODUCT_SOONG_NAMESPACES += $(LOCAL_PATH)
 
+# VINTF
+DEVICE_MANIFEST_FILE := $(LOCAL_PATH)/manifest.xml
+
 # Packages
 PRODUCT_PACKAGES += libwpa_client wpa_supplicant hostapd android.hardware.health@2.1-impl android.hardware.health@2.1-service
 
