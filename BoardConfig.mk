@@ -97,6 +97,50 @@ DEVICE_MANIFEST_SKUS := m681 l681
 DEVICE_MANIFEST_M681_FILES := $(DEVICE_PATH)/vintf/manifest_m681.xml
 DEVICE_MANIFEST_L681_FILES := $(DEVICE_PATH)/vintf/manifest_l681.xml
 
+# Shims
+# N-ABI shims for the legacy blobs, plus liblog for the MTK loaders.  /vendor
+# is /system/vendor here, so each pair is listed with both prefixes.
+TARGET_LD_SHIM_LIBS += \
+    /vendor/lib/egl/libGLES_mali.so|/vendor/lib/libm681shim_base.so \
+    /vendor/lib64/egl/libGLES_mali.so|/vendor/lib64/libm681shim_base.so \
+    /vendor/lib/hw/gralloc.mt6755.so|/vendor/lib/libm681shim_base.so \
+    /vendor/lib64/hw/gralloc.mt6755.so|/vendor/lib64/libm681shim_base.so \
+    /vendor/lib/libgui_ext.so|/vendor/lib/libmtkshim_ui.so \
+    /vendor/lib64/libgui_ext.so|/vendor/lib64/libmtkshim_ui.so \
+    /vendor/bin/spm_loader|liblog.so \
+    /vendor/bin/wmt_loader|liblog.so \
+    /vendor/bin/wmt_launcher|liblog.so \
+    /vendor/lib/hw/audio.primary.mt6755.so|/vendor/lib/libm3note_n_audio.so \
+    /vendor/lib64/hw/audio.primary.mt6755.so|/vendor/lib64/libm3note_n_audio.so \
+    /system/vendor/lib/egl/libGLES_mali.so|/system/vendor/lib/libm681shim_base.so \
+    /system/vendor/lib64/egl/libGLES_mali.so|/system/vendor/lib64/libm681shim_base.so \
+    /system/vendor/lib/hw/gralloc.mt6755.so|/system/vendor/lib/libm681shim_base.so \
+    /system/vendor/lib64/hw/gralloc.mt6755.so|/system/vendor/lib64/libm681shim_base.so \
+    /system/vendor/lib/libgui_ext.so|/system/vendor/lib/libmtkshim_ui.so \
+    /system/vendor/lib64/libgui_ext.so|/system/vendor/lib64/libmtkshim_ui.so \
+    /system/vendor/bin/spm_loader|liblog.so \
+    /system/vendor/bin/wmt_loader|liblog.so \
+    /system/vendor/bin/wmt_launcher|liblog.so \
+    /system/vendor/lib/hw/audio.primary.mt6755.so|/system/vendor/lib/libm3note_n_audio.so \
+    /system/vendor/lib64/hw/audio.primary.mt6755.so|/system/vendor/lib64/libm3note_n_audio.so
+
+# liblog for N daemons that call __android_log_* with only libcutils in
+# DT_NEEDED: with full Treble libcutils comes from the VNDK namespace and
+# liblog is not in the daemon's local group.  gsm0710muxd is the MD1 mux of
+# the RIL chain.
+TARGET_LD_SHIM_LIBS += \
+    /vendor/bin/gsm0710muxd|liblog.so \
+    /vendor/bin/muxreport|liblog.so \
+    /vendor/bin/msensord|liblog.so \
+    /system/vendor/bin/gsm0710muxd|liblog.so \
+    /system/vendor/bin/muxreport|liblog.so \
+    /system/vendor/bin/msensord|liblog.so
+
+# thermalloadalgod (init.m681.thermal.rc) needs liblog for the same reason.
+TARGET_LD_SHIM_LIBS += \
+    /vendor/bin/thermalloadalgod|liblog.so \
+    /system/vendor/bin/thermalloadalgod|liblog.so
+
 # Malloc
 # N camera blobs allocate GraphicBuffer with the N size (136 bytes on arm)
 # while the A13 object is 160; jemalloc rounds 136 up to 160, Scudo does not.

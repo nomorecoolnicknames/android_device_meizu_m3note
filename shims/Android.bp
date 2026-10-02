@@ -1,0 +1,203 @@
+
+cc_library_shared {
+    name: "libm3note_n_gui",
+    stem: "libgui",
+    vendor: true,
+    srcs: [
+        "fwd_stub.c",
+        "gui_n.cpp",
+    ],
+    shared_libs: [
+        "libgui_vendor",
+        "libsensor_vendor",
+        "liblog",
+    ],
+}
+cc_library_shared {
+    name: "libm3note_n_base",
+    stem: "libm681shim_base",
+    vendor: true,
+    srcs: [
+        "base_n_c.c",
+        "base_n.cpp",
+    ],
+    header_libs: ["libcutils_headers"],
+    shared_libs: [
+        "libbinder",
+        "libutilscallstack",
+        "liblog",
+    ],
+    ldflags: ["-Wl,--no-as-needed"],
+}
+cc_library_shared {
+    name: "libm3note_n_ui",
+    stem: "libmtkshim_ui",
+    vendor: true,
+    srcs: ["ui_n.cpp"],
+    shared_libs: [
+        "libm3note_n_base",
+        "libui",
+        "libutils",
+        "liblog",
+    ],
+}
+cc_library_shared {
+    name: "libm3note_n_perfservice",
+    vendor: true,
+    stem: "libperfservicenative",
+    srcs: ["perfservice.c"],
+    cflags: ["-Wno-unused-parameter"],
+}
+cc_library_shared {
+    name: "libm3note_n_region",
+    stem: "libm681shim_region",
+    vendor: true,
+    srcs: ["region_n.cpp"],
+    header_libs: [
+        "libutils_headers",
+        "liblog_headers",
+    ],
+    shared_libs: ["liblog"],
+    cflags: [
+        "-fvisibility=hidden",
+        "-Wno-unused-parameter",
+    ],
+}
+// AudioSystem::getDeviceConnectionState for audio.primary.mt6755.so, added to
+// it by TARGET_LD_SHIM_LIBS (BoardConfig.mk); see audiosystem_n.cpp.
+cc_library_shared {
+    name: "libm3note_n_audio",
+    vendor: true,
+    srcs: ["audiosystem_n.cpp"],
+}
+// libmedia.so under its real name, empty: audio.primary.mt6755.so (lib, lib64)
+// needs it, and with full Treble the vendor namespace cannot reach the system
+// libmedia.  Nothing is imported from it (AudioSystem comes from
+// libm3note_n_audio).
+cc_library_shared {
+    name: "libm3note_n_media",
+    vendor: true,
+    stem: "libmedia",
+    srcs: ["fwd_stub.c"],
+}
+// netutils ccmni/txq and cutils jstring for mtk-ril.so / librilmtk.so, added
+// to them by TARGET_LD_SHIM_LIBS (BoardConfig.mk); see ril_n.cpp.
+cc_library_shared {
+    name: "libm3note_n_ril",
+    vendor: true,
+    srcs: ["ril_n.cpp"],
+}
+// libnetd_client.so under its real name: mtk-ril.so NEEDS it and A13 has no
+// vendor variant (system-only); see netd_client_n.c.
+cc_library_shared {
+    name: "libm3note_n_netd_client",
+    vendor: true,
+    stem: "libnetd_client",
+    srcs: ["netd_client_n.c"],
+}
+// Camera: LD_SHIM libraries of the two provider roots hw/camera.mt6755.so and
+// libcam_platform.so (BoardConfig.mk): N GraphicBuffer/PropertyMap ABI, and
+// libjpeg with a struct-size log for the blobs that do not need it; see
+// camera_n.cpp and camera_jpeg_n.c.
+cc_library_shared {
+    name: "libm3note_n_camera",
+    vendor: true,
+    srcs: ["camera_n.cpp"],
+    shared_libs: [
+        "libm3note_n_ui",
+        "libui",
+        "libutils",
+        "liblog",
+    ],
+}
+cc_library_shared {
+    name: "libm3note_n_camera_jpeg",
+    vendor: true,
+    srcs: ["camera_jpeg_n.c"],
+    shared_libs: [
+        "libjpeg",
+        "liblog",
+        "libdl",
+    ],
+}
+// Newer DpFragStream / JpgEncHal::setEncSize forms for libJpgDecPipe.so and
+// libfeatureio.so (LD_SHIM, BoardConfig.mk). The older forms they call are in the
+// libdpframework.so / libJpgEncPipe.so blobs those two NEED, so they stay
+// undefined here and resolve in the group at load time.
+cc_library_shared {
+    name: "libm3note_n_dpfrag",
+    vendor: true,
+    srcs: ["dpfrag_n.c"],
+    shared_libs: ["liblog"],
+    allow_undefined_symbols: true,
+}
+cc_library_shared {
+    name: "libm3note_n_jpgenc",
+    vendor: true,
+    srcs: ["jpgenc_n.c"],
+    allow_undefined_symbols: true,
+}
+// Libraries the camera blobs NEED by name that a vendor process cannot reach in A13
+// (system-only or absent): libandroid_runtime / libnativehelper (libmeizucamera, a
+// Flyme camera-app JNI library NEEDED by camera.mt6755), libfilter_effects (Meizu,
+// not in the profile), libicuuc / libdng_sdk (the N libskia). libandroid,
+// libjnigraphics, libvmp_render and libicui18n are NEEDED but nothing is imported
+// from them, so they are empty forwarders.
+cc_library_shared {
+    name: "libm3note_n_android_runtime",
+    vendor: true,
+    stem: "libandroid_runtime",
+    srcs: ["android_runtime_n.cpp"],
+}
+cc_library_shared {
+    name: "libm3note_n_nativehelper",
+    vendor: true,
+    stem: "libnativehelper",
+    srcs: ["nativehelper_n.c"],
+    header_libs: ["jni_headers"],
+}
+cc_library_shared {
+    name: "libm3note_n_filter_effects",
+    vendor: true,
+    stem: "libfilter_effects",
+    srcs: ["filter_effects_n.c"],
+    shared_libs: ["liblog"],
+}
+cc_library_shared {
+    name: "libm3note_n_icuuc",
+    vendor: true,
+    stem: "libicuuc",
+    srcs: ["icu56_n.c"],
+    shared_libs: ["liblog"],
+}
+cc_library_shared {
+    name: "libm3note_n_dng_sdk",
+    vendor: true,
+    stem: "libdng_sdk",
+    srcs: ["dng_sdk_n.c"],
+    shared_libs: ["liblog"],
+}
+cc_library_shared {
+    name: "libm3note_n_android",
+    vendor: true,
+    stem: "libandroid",
+    srcs: ["fwd_stub.c"],
+}
+cc_library_shared {
+    name: "libm3note_n_jnigraphics",
+    vendor: true,
+    stem: "libjnigraphics",
+    srcs: ["fwd_stub.c"],
+}
+cc_library_shared {
+    name: "libm3note_n_vmp_render",
+    vendor: true,
+    stem: "libvmp_render",
+    srcs: ["fwd_stub.c"],
+}
+cc_library_shared {
+    name: "libm3note_n_icui18n",
+    vendor: true,
+    stem: "libicui18n",
+    srcs: ["fwd_stub.c"],
+}

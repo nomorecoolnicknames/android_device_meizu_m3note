@@ -48,6 +48,35 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/etc/init.m681.thermal.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.m681.thermal.rc \
     $(LOCAL_PATH)/rootdir/etc/init.trustonic.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.trustonic.rc
 
+# Shims
+PRODUCT_PACKAGES += libm3note_n_gui libm3note_n_base libm3note_n_ui libm3note_n_perfservice libm3note_n_region libm3note_n_audio
+# Empty vendor libmedia.so: audio.primary.mt6755.so needs it by name.
+PRODUCT_PACKAGES += libm3note_n_media
+# RIL shims: the LD shim of mtk-ril.so/librilmtk.so and the vendor
+# libnetd_client.so needed by mtk-ril.so.
+PRODUCT_PACKAGES += libm3note_n_ril libm3note_n_netd_client
+# Camera shims for the provider roots and the libraries the blobs need by
+# name that Android 13 does not provide to vendor processes.
+PRODUCT_PACKAGES += \
+    libm3note_n_camera \
+    libm3note_n_camera_jpeg \
+    libm3note_n_dpfrag \
+    libm3note_n_jpgenc \
+    libm3note_n_android_runtime \
+    libm3note_n_nativehelper \
+    libm3note_n_filter_effects \
+    libm3note_n_icuuc \
+    libm3note_n_dng_sdk \
+    libm3note_n_android \
+    libm3note_n_jnigraphics \
+    libm3note_n_vmp_render \
+    libm3note_n_icui18n
+# RIL
+# librilutils: vendor AOSP library needed by name by mtk-ril.so, librilmtk.so
+# and libril.  BOARD_PROVIDES_LIBRIL and ENABLE_VENDOR_RIL_SERVICE make the
+# libril and rild names resolve to ril/.
+PRODUCT_PACKAGES += librilutils
+
 # HIDL HALs
 # Vendor HAL services wrapping the MT6755 blobs.
 PRODUCT_PACKAGES += \
@@ -80,6 +109,17 @@ PRODUCT_PACKAGES += \
     android.hardware.wifi@1.0-service \
     libwifi-hal-mt66xx \
     wificond
+
+# Libraries needed by the blobs that are not otherwise in the image.  With
+# BOARD_VNDK_VERSION the vendor namespace cannot see /system/lib*/libstdc++.so.
+PRODUCT_PACKAGES += \
+    libcamera_client_vendor \
+    libstdc++.vendor \
+    libtinyxml \
+    libalsautils \
+    libtinycompress
+
+PRODUCT_PACKAGES += gralloc.default
 
 # Permissions
 PRODUCT_COPY_FILES += \
