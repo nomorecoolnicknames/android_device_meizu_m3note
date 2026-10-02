@@ -5,6 +5,13 @@ LOCAL_PATH := device/meizu/m3note
 # Soong namespaces
 PRODUCT_SOONG_NAMESPACES += $(LOCAL_PATH)
 
+# AAPT
+PRODUCT_AAPT_CONFIG := normal
+PRODUCT_AAPT_PREF_CONFIG := xxhdpi
+
+# Overlays
+DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
+
 # VINTF
 DEVICE_MANIFEST_FILE := $(LOCAL_PATH)/manifest.xml
 

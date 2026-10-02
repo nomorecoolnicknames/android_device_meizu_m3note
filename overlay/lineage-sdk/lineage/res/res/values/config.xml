@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- PhoneWindowManager reads the key resources below from
+     org.lineageos.platform.internal.R, so they belong in the lineage-sdk overlay. -->
+<resources>
+    <!-- Hardware keys present: 1 Home | 64 Volume = 65.  The default of 64
+         hides the Settings > Buttons > Home category. -->
+    <integer name="config_deviceHardwareKeys">65</integer>
+
+    <!-- Keys allowed to wake the screen: 1 Home only (volume wake gives false
+         wakes in a pocket).  For KEYCODE_HOME this bit, not the keylayout WAKE
+         flag, decides whether the key wakes the device. -->
+    <integer name="config_deviceHardwareWakeKeys">1</integer>
+</resources>
