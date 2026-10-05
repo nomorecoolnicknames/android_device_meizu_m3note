@@ -348,6 +348,15 @@ PRODUCT_PACKAGES += \
     libcurl \
     libandroid_net
 
+# VINTF
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/sepolicy/manifest.xml:system/manifest.xml \
+    $(LOCAL_PATH)/sepolicy/compatibility_matrix.xml:system/compatibility_matrix.xml
+
+# hwservicemanager reads the device manifest from /vendor/manifest.xml.
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/sepolicy/manifest.xml:$(TARGET_COPY_OUT_VENDOR)/manifest.xml
+
 # Legacy codecs still probe the media_profiles_V1_0.xml name.
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/media/media_profiles.xml:system/etc/media_profiles_V1_0.xml
