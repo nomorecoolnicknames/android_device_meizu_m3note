@@ -1,0 +1,70 @@
+ro.forge.meizu.expect_codename=m3note
+# RIL arguments contain a space; PRODUCT_PROPERTY_OVERRIDES tokenizes these.
+rild.libargs=-d /dev/ttyC0
+
+# Camera: conservative RRZO preview path, unstable MTK feature paths disabled.
+camera.disable_zsl_mode=1
+camera.zsdmode=0
+persist.m681.camera.safe_params=1
+persist.m681.cam.safe=1
+persist.m681.cam.rel_fail=1
+persist.m681.cam.skip_set=1
+persist.m681.cam.no_torch=0
+persist.m681.cam.force640=0
+persist.m681.cam.no_fullraw=1
+persist.m681.cam.p1path=2
+persist.m681.cam.pre_p1magic=1
+persist.m681.cam.sync_tuning=1
+persist.m681.cam.deq_retry=0
+debug.featurepipe.enable=0
+debug.tworunpass2.enable=0
+debug.lowPowerVR.enable=0
+debug.pass1.pdafon=0
+debug.pass1.rawtype=0
+debug.forceFPS.enable=0
+debug.mtk_cam_zsdmfb_support=0
+debug.mtk_cam_zsdhdr_support=0
+ro.mtk_zsdhdr_support=0
+debug.camera.vfb.disable=1
+debug.camera.eis.disable=1
+debug.eis.EMEnabled=0
+debug.eis.dump=0
+debug.eisDrv.dump=0
+debug.eis.disable=1
+persist.camera.eis.enable=0
+persist.camera.eis.disable=1
+persist.camera.vfb.enable=0
+persist.camera.vfb.disable=1
+cam.dumpnpipelog.enable=0
+camera.featurepipe.dumpvfb=0
+
+# IMS / VoLTE
+# Read by mtk-ril RIL_Init and ImsManager at start-up.
+# Platform supports IMS and VoLTE.
+persist.mtk_ims_support=1
+persist.mtk_volte_support=1
+# VoLTE enabled; with 0 the RIL sends AT+EIMSVOLTE=0 to the modem.
+persist.mtk.volte.enable=1
+# The same setting for ImsService (vendor namespace).
+persist.vendor.mtk.volte.enable=1
+# Override the device side of the VoLTE availability check.
+persist.dbg.volte_avail_ovr=1
+# No ePDG: its policy rejects the framework's IMS bearer request.
+persist.mtk_epdg_support=0
+# AT channel socket for MAL (rilproxy-mal belongs to the unused ril-proxy).
+ril.mal.socket=rild-mal
+
+# Privacy: mtk-ril logs phone numbers, SMS PDUs, USSD, ICCID and IMSI at DEBUG
+# under the AT and RIL tags. For radio debugging: setprop log.tag.AT D
+log.tag.AT=I
+log.tag.RIL=I
+
+# Keep the radio uid out of chatty pruning and enlarge the radio log buffer.
+ro.logd.filter=~! ~1000/! 1001
+ro.logd.size.radio=4M
+
+# HWC wrapper around hwcomposer.mt6755 (FBIOBLANK on primary power off/on).
+ro.hardware.hwcomposer=m3note
+
+# Power HAL with double tap to wake (/sys/devices/mx_tsp/gesture_control).
+ro.hardware.power=m3note

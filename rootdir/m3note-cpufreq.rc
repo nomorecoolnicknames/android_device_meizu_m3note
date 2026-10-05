@@ -1,0 +1,21 @@
+# Arms the MTK cpufreq driver of the 4.4 kernel, on by default.
+#
+# The driver does not register at boot; writing 1 to
+# /sys/module/mt_cpufreq/parameters/forge_mt_cpufreq does, and only a reboot
+# undoes it. Without it there are no cpufreq policies and the cores stay at the
+# LK frequencies. The driver scales frequency only, at a fixed VPROC of 1.000 V
+# (LITTLE <= 689 MHz, big <= 1196 MHz).
+#
+# Disable with: setprop persist.vendor.m3note.cpufreq_arm 0 (next boot).
+# Init cannot trigger on "not 0" (an empty property never matches), so a small
+# script decides. Deep sleep (mt_sleep.allow_s3) is not touched here.
+#
+# The Power HAL (user system) writes the cpufreq floors; the ueventd rule for
+# policy*/scaling_min_freq does not apply because the policies appear later, so
+# the permissions are set here.
+on property:sys.boot_completed=1
+    exec u:r:m3note_script:s0 root root -- /system/bin/sh /vendor/bin/m3note-cpufreq-arm.sh
+    chown system system /sys/devices/system/cpu/cpufreq/policy0/scaling_min_freq
+    chmod 0664 /sys/devices/system/cpu/cpufreq/policy0/scaling_min_freq
+    chown system system /sys/devices/system/cpu/cpufreq/policy4/scaling_min_freq
+    chmod 0664 /sys/devices/system/cpu/cpufreq/policy4/scaling_min_freq

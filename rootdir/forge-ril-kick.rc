@@ -1,0 +1,11 @@
+# Telephony start-up workaround (see forge-ril-kick.sh). Runs once per boot.
+service forge-ril-kick /system/bin/sh /system/bin/forge-ril-kick.sh
+    class late_start
+    user root
+    group root radio
+    seclabel u:r:m3note_script:s0
+    oneshot
+    disabled
+
+on property:sys.boot_completed=1
+    start forge-ril-kick

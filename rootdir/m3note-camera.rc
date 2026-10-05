@@ -1,0 +1,14 @@
+# Camera power path of the 4.4 kernel, off by default.
+#
+# Without forge_cam_power=1 there is no /dev/kd_camera_hw(_bus2), and the rails
+# need the PMIC register scope opened first (forge_pmic_reg_scope=2).
+#   l681: ov13853 (0xD854/0xD855), ov5670 (0x5670), hi553 (0x0553); no AF lens
+#         and no flash driver.
+# Both revisions use the m681 camera HAL, which selects the tuning by sensor ID.
+#
+# Enable with: setprop persist.vendor.m3note.cam_arm 1 (next boot).
+# early-boot runs after the persist properties are loaded and before class hal
+# (camera provider) and class main (cameraserver) start.
+on early-boot && property:persist.vendor.m3note.cam_arm=1
+    write /sys/module/pmic/parameters/forge_pmic_reg_scope 2
+    write /sys/module/kd_camera_hw/parameters/forge_cam_power 1

@@ -1,0 +1,76 @@
+on init
+    mkdir /nvdata 0771 system system
+
+on post-fs-data
+    chown root system /nvdata
+    # MTK connectivity blobs open /nvdata/APCFG/APRDEB directly from bluetooth
+    # and WMT contexts; keep the directories traversable.
+    chmod 0771 /nvdata
+    symlink /nvdata /data/nvram
+    copy /fstab.mt6755 /nvdata/fstab.mt6755
+    chown root root /nvdata/fstab.mt6755
+    chmod 0644 /nvdata/fstab.mt6755
+    copy /fstab.mt6755 /data/nvram/fstab.mt6755
+    chown root root /data/nvram/fstab.mt6755
+    chmod 0644 /data/nvram/fstab.mt6755
+    restorecon /nvdata
+    restorecon /data/nvram
+    restorecon /custom
+    restorecon /protect_f
+    restorecon /protect_s
+    restorecon_recursive /nvdata
+    chown system system /nvdata/APCFG/APRDEB/WIFI
+    chmod 0660 /nvdata/APCFG/APRDEB/WIFI
+    chown bluetooth bluetooth /nvdata/APCFG/APRDEB/BT_Addr
+    chmod 0660 /nvdata/APCFG/APRDEB/BT_Addr
+    # MD_Type is a 4-byte APRDCL LID; it is only written after NvRAMAgent
+    # reports Ready.
+    setprop debug.m681.mdtype_fix.trigger post_fs_data_early
+    exec u:r:m3note_script:s0 root root -- /system/bin/sh /system/bin/m681_mdtype_fix.sh early
+
+# The NVRAM daemon may repopulate /data/nvram on a clean boot; refresh the
+# compatibility fstab copy once it reports ready.
+on property:service.nvram_init=Ready
+    # Atomic refresh, see forge-nvram-fstab.sh.
+    exec u:r:m3note_script:s0 root root -- /system/bin/sh /sbin/forge-nvram-fstab.sh
+    restorecon /nvdata
+    restorecon /data/nvram
+    restorecon /custom
+    restorecon /protect_f
+    restorecon /protect_s
+    restorecon_recursive /nvdata
+    restorecon /nvdata/fstab.mt6755
+    restorecon /data/nvram/fstab.mt6755
+    setprop debug.m681.wifi_nvram_repair requested
+    exec u:r:init:s0 root system -- /system/bin/m681_nvram_wifi_repair
+    chown system system /nvdata/APCFG/APRDEB/WIFI
+    chmod 0660 /nvdata/APCFG/APRDEB/WIFI
+    chown bluetooth bluetooth /nvdata/APCFG/APRDEB/BT_Addr
+    chmod 0660 /nvdata/APCFG/APRDEB/BT_Addr
+    setprop debug.m681.mdtype_fix.trigger nvram_ready
+    start m681_mdtype_fix
+
+# Do not force RestoreFlag here: the vendor restore path can recreate default
+# APCFG records and overwrite the Wi-Fi MAC. m681_nvram_wifi_repair restores
+# an invalid Wi-Fi record from raw nvram after service.nvram_init=Ready.
+on property:service.nvram_init=Pre_Ready
+    setprop debug.m681.nvram.pre_ready 1
+
+service m681_mdtype_fix /system/bin/sh /system/bin/m681_mdtype_fix.sh
+    class late_start
+    user root
+    group root system radio
+    seclabel u:r:m3note_script:s0
+    disabled
+    oneshot
+
+# Fallback in case the one-shot daemon exits without setting the ready
+# property, so audio does not wait forever.
+on property:init.svc.nvram_daemon=stopped
+    setprop service.nvram_init Ready
+
+# Start the NVRAM services on boot rather than post-fs-data, once
+# servicemanager is up ("binder_context_mgr_node is NULL" otherwise).
+on boot
+    start nvram_daemon
+    start NvRAMAgent

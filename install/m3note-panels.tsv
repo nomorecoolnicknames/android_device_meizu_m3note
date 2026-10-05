@@ -1,0 +1,10 @@
+# M3 Note panel -> board revision. Read by libinit_m3note
+# (/vendor/etc/m3note-panels.tsv) and by the OTA (install/bin/m3note-revision.sh).
+# LK passes the detected panel on the kernel command line as lcm=<n>-<name>,
+# in normal boot and in recovery.
+# Format: <substring of the lcm= name><TAB><board>. A command line naming
+# panels of both boards, or none of these, gives no answer.
+#   m681: lcm=1-ili9885_fhd_dsi_vdo_txd1
+#   l681: lcm=1-hx8399_fhd_dsi_vdo_txd_auo_al1518
+ili9885	m681
+hx8399	l681

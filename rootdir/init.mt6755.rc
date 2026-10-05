@@ -1,0 +1,416 @@
+# MTK platform .rc configure
+
+import init.project.rc
+import /init.meizu_mt675x.rc
+import init.connectivity.rc
+import init.modem.rc
+import init.rilproxy.rc
+import init.c2k.rc
+import /FWUpgradeInit.rc
+import init.xlog.rc
+import init.aee.rc
+import init.ssd.rc
+import init.no_ssd.rc
+import init.ssd_nomuser.rc
+import init.fon.rc
+import init.volte.rc
+import init.epdg.rc
+import init.trustonic.rc
+import init.nvdata.rc
+import init.microtrust.rc
+import /init.trace.rc
+
+on early-init
+    # Load firmware directly from /vendor/firmware. With the user-helper
+    # fallback, cached firmware is re-requested on every suspend and the
+    # resulting uevent aborts autosuspend.
+    write /sys/module/firmware_class/parameters/path /vendor/firmware
+    # Raise the PPM floor during boot (lifted on sys.boot_completed).
+    write /proc/ppm/policy/userlimit_min_cpu_freq "1 1508000"
+    write /proc/ppm/policy/userlimit_min_cpu_core "1 1"
+    write /proc/bootprof "INIT:early-init"
+    mount debugfs debugfs /sys/kernel/debug
+    chmod 0755 /sys/kernel/debug
+    setprop ro.support.rpmb 1
+
+on init
+    chown shell system /proc/mtk_battery_cmd/current_cmd
+    chown shell system /proc/mtk_battery_cmd/discharging_cmd
+    export USBOTG_STORAGE /storage/usbotg
+
+    symlink /sdcard /mnt/sdcard
+    symlink /dev/block/platform/mtk-msdc.0/11240000.msdc1/by-name/boot /dev/bootimg
+    symlink /dev/block/platform/mtk-msdc.0/11240000.msdc1/by-name/recovery /dev/recovery
+    symlink /dev/block/platform/mtk-msdc.0/11240000.msdc1/by-name/secro /dev/sec_ro
+    symlink /dev/block/platform/mtk-msdc.0/11240000.msdc1/by-name/proinfo /dev/pro_info
+    symlink /dev/block/platform/mtk-msdc.0/11240000.msdc1/by-name/nvram /dev/nvram
+    symlink /dev/block/platform/mtk-msdc.0/11240000.msdc1/by-name/para /dev/misc
+    symlink /dev/block/platform/mtk-msdc.0/11240000.msdc1/by-name/logo /dev/logo
+    symlink /dev/block/platform/mtk-msdc.0/11240000.msdc1/by-name/misc2 /dev/misc2
+    symlink /system/vendor /odm
+
+    mkdir /protect_f 0771 system system
+    mkdir /protect_s 0771 system system
+    mkdir /persist 0771 system system
+    mkdir /nvcfg 0771 system system
+    mkdir /nvdata 0771 system system
+    mkdir /custom 0771 system system
+    mkdir /mnt/cd-rom 0000 system system
+
+
+    chmod 0660 /sys/power/power_mode
+    chown system system /sys/power/power_mode
+
+    chmod 0666 /dev/ion
+    chown system graphics /dev/ion
+
+    chown root system /proc/lk_env
+    chmod 0660 /proc/lk_env
+    chmod 0660 /dev/kmsg
+    chown root system /dev/kmsg
+
+    mkdir /mnt/media_rw/usbotg 0700 media_rw media_rw
+    mkdir /storage/usbotg 0700 root root
+
+    write /proc/sys/net/core/wmem_max 2097152
+    write /proc/sys/net/core/rmem_max 2097152
+
+on late-init
+    write /proc/bootprof "INIT:late-init"
+
+on charger
+    mount ext4 /dev/block/mmcblk0p29 /system ro wait
+    chmod 0660 /dev/spm
+    chown system system /dev/spm
+    start spm_script
+    chmod 0660 /dev/kmsg
+    start fuelgauged
+    start kpoc_charger
+    start servicemanager
+    write /sys/devices/platform/mt_usb/cmode 0
+
+on fs
+    write /proc/bootprof "INIT:Mount_START"
+    write /sys/kernel/debug/tracing/trace_marker "B|1|Mount"
+    mount_all /fstab.mt6755
+    exec u:r:fsck:s0 root root -- /system/bin/tune2fs -O has_journal -u 10010 -r 4096 /dev/block/mmcblk0p31
+    write /sys/kernel/debug/tracing/trace_marker "E"
+    write /proc/bootprof "INIT:Mount_END"
+
+on post-fs
+    write /proc/bootprof "INIT:post-fs"
+    symlink /sdcard /storage/sdcard0
+    symlink /system/vendor /odm
+    chown system system /protect_f
+    chmod 0770 /protect_f
+    chown system system /protect_s
+    chmod 0770 /protect_s
+
+    # Restore SELinux labels of files that may be replaced manually.
+    restorecon /system/etc/audio_policy.conf
+    restorecon /system/vendor/etc/audio_policy.conf
+    restorecon /system/vendor/etc/audio_device.xml
+    restorecon /system/vendor/etc/audio_em.xml
+    restorecon /system/bin/surfaceflinger
+    restorecon /system/bin/sgdisk
+    restorecon /system/vendor/bin/pq
+    restorecon /system/vendor/bin/guiext-server
+    restorecon /system/vendor/bin/mcDriverDaemon
+    restorecon /system/vendor/bin/nvram_daemon
+    restorecon /system/vendor/bin/nvram_agent_binder
+    restorecon /system/vendor/bin/aee_core_forwarder
+    restorecon /system/bin/fuelgauged
+    restorecon /system/bin/fuelgauged_static
+    restorecon /system/bin/batterywarning
+    restorecon /system/vendor/bin/batterywarning
+    restorecon_recursive /system/vendor/etc/audio_param
+    restorecon_recursive /system/vendor/etc/mcRegistry
+
+on post-fs-data
+    # Vibrator sysfs permissions for vibrator@1.0-service.mtk.
+    chown system system /sys/class/timed_output/vibrator/enable
+    chmod 0660 /sys/class/timed_output/vibrator/enable
+    chown system system /sys/class/timed_output/vibrator/vibr_vol
+    chmod 0660 /sys/class/timed_output/vibrator/vibr_vol
+    write /proc/bootprof "INIT:post-fs-data"
+
+    # zram swap (declared in fstab.mt6755).
+    swapon_all /fstab.mt6755
+
+    chown system system /persist
+    chmod 0771 /persist
+
+    chown system system /nvcfg
+    chmod 0771 /nvcfg
+    restorecon_recursive /nvcfg
+
+    chown root system /nvdata
+    chmod 0771 /nvdata
+    symlink /nvdata /data/nvram
+    mkdir /nvdata/media 0771 media audio
+    restorecon_recursive /nvdata
+
+    chmod 0660 /data/misc/wifi/p2p_supplicant.conf
+    rmdir /data/system/wpa_supplicant
+
+    chmod 0660 /dev/rfkill
+    mkdir /dev/radio 0770 radio radio
+    mkdir /data/drm/wv 0770 drm system
+
+    mkdir /data/gps_mnl 0771 gps system
+    mkdir /data/mpe_mnl 0771 gps system
+    chown gps system /data/mpe_mnl
+    chmod 0775 /system/xbin/MPED
+
+    mkdir /data/nfc_socket 0771 nfc radio
+
+    mkdir /data/misc/dhcp 0770 dhcp wifi
+    chown dhcp system /data/misc/dhcp
+    mkdir /data/misc/wide-dhcpv6 0770 dhcp wifi
+    chown dhcp wifi /data/misc/wide-dhcpv6
+    mkdir /data/misc/radvd 0770 system system
+    chmod 0444 /etc/radvd/radvd.conf
+
+    chmod 0666 /dev/mali0
+    restorecon /dev/mali
+    restorecon /dev/mali0
+
+    # Create the framebuffer nodes early (static major) so SF/HWC do not wait
+    # for uevents; the primary framebuffer may also appear as fb1+.
+    mkdir /dev/graphics 0755 root root
+    mknod /dev/graphics/fb0 c 29 0
+    mknod /dev/fb0 c 29 0
+    mknod /dev/graphics/fb1 c 29 1
+    mknod /dev/fb1 c 29 1
+    mknod /dev/graphics/fb2 c 29 2
+    mknod /dev/fb2 c 29 2
+    mknod /dev/graphics/fb3 c 29 3
+    mknod /dev/fb3 c 29 3
+    mknod /dev/graphics/fb4 c 29 4
+    mknod /dev/fb4 c 29 4
+    mknod /dev/graphics/fb5 c 29 5
+    mknod /dev/fb5 c 29 5
+    mknod /dev/graphics/fb6 c 29 6
+    mknod /dev/fb6 c 29 6
+    mknod /dev/graphics/fb7 c 29 7
+    mknod /dev/fb7 c 29 7
+
+    # MTK display node permissions.
+    chmod 0660 /dev/graphics/fb0
+    chown system graphics /dev/graphics/fb0
+    restorecon /dev/graphics/fb0
+
+    chmod 0660 /dev/graphics/fb1
+    chown system graphics /dev/graphics/fb1
+    restorecon /dev/graphics/fb1
+
+    chmod 0660 /dev/graphics/fb2
+    chown system graphics /dev/graphics/fb2
+    restorecon /dev/graphics/fb2
+
+    chmod 0660 /dev/graphics/fb3
+    chown system graphics /dev/graphics/fb3
+    restorecon /dev/graphics/fb3
+    chmod 0660 /dev/graphics/fb4
+    chown system graphics /dev/graphics/fb4
+    restorecon /dev/graphics/fb4
+    chmod 0660 /dev/graphics/fb5
+    chown system graphics /dev/graphics/fb5
+    restorecon /dev/graphics/fb5
+    chmod 0660 /dev/graphics/fb6
+    chown system graphics /dev/graphics/fb6
+    restorecon /dev/graphics/fb6
+    chmod 0660 /dev/graphics/fb7
+    chown system graphics /dev/graphics/fb7
+    restorecon /dev/graphics/fb7
+
+    chmod 0660 /dev/fb0
+    chown system graphics /dev/fb0
+    restorecon /dev/fb0
+
+    chmod 0660 /dev/fb1
+    chown system graphics /dev/fb1
+    restorecon /dev/fb1
+
+    chmod 0660 /dev/fb2
+    chown system graphics /dev/fb2
+    restorecon /dev/fb2
+
+    chmod 0660 /dev/fb3
+    chown system graphics /dev/fb3
+    restorecon /dev/fb3
+    chmod 0660 /dev/fb4
+    chown system graphics /dev/fb4
+    restorecon /dev/fb4
+    chmod 0660 /dev/fb5
+    chown system graphics /dev/fb5
+    restorecon /dev/fb5
+    chmod 0660 /dev/fb6
+    chown system graphics /dev/fb6
+    restorecon /dev/fb6
+    chmod 0660 /dev/fb7
+    chown system graphics /dev/fb7
+    restorecon /dev/fb7
+
+    chmod 0660 /dev/mtk_disp_mgr
+    chown system graphics /dev/mtk_disp_mgr
+    restorecon /dev/mtk_disp_mgr
+
+    chmod 0660 /dev/mtkfb_vsync
+    chown system graphics /dev/mtkfb_vsync
+    restorecon /dev/mtkfb_vsync
+
+    chmod 0660 /dev/sw_sync
+    chown system graphics /dev/sw_sync
+    restorecon /dev/sw_sync
+
+    chmod 0660 /d/disp
+    chown system graphics /d/disp
+
+    chmod 0660 /d/dispsys
+    chown system graphics /d/dispsys
+
+    # MTK display/camera node permissions for SurfaceFlinger and cameraserver.
+    chmod 0444 /dev/mtk_disp
+
+    # The camera HAL runs in the camera group and needs MTK_SMI (BWC).
+    chmod 0660 /dev/MTK_SMI
+    chown system camera /dev/MTK_SMI
+    restorecon /dev/MTK_SMI
+
+    # The MTK video encoder opens /dev/Vcodec from mediacodec.
+    chmod 0660 /dev/Vcodec
+    chown system media /dev/Vcodec
+    restorecon /dev/Vcodec
+
+    chmod 0660 /dev/camera-sysram
+    chmod 0660 /dev/camera-isp
+    chmod 0660 /dev/camera-fdvt
+    chmod 0660 /dev/camera-pipemgr
+    chmod 0660 /dev/kd_camera_hw
+    chmod 0660 /dev/kd_camera_flashlight
+    chmod 0660 /dev/kd_camera_hw_bus2
+    chmod 0660 /dev/FM50AF
+    chmod 0660 /dev/DW9718AF
+    chmod 0660 /dev/CAM_CAL_DRV
+    chmod 0660 /dev/CAM_CAL_DRV1
+    chmod 0660 /dev/CAM_CAL_DRV2
+
+    chown system camera /dev/camera-sysram
+    chown system camera /dev/camera-isp
+    chown system camera /dev/camera-fdvt
+    chown system camera /dev/camera-pipemgr
+    chown system camera /dev/kd_camera_hw
+    chown system camera /dev/kd_camera_flashlight
+    chown system camera /dev/kd_camera_hw_bus2
+    chown system camera /dev/FM50AF
+    chown system camera /dev/DW9718AF
+    chown system camera /dev/CAM_CAL_DRV
+    chown system camera /dev/CAM_CAL_DRV1
+    chown system camera /dev/CAM_CAL_DRV2
+    restorecon /dev/camera-sysram
+    restorecon /dev/camera-isp
+    restorecon /dev/camera-fdvt
+    restorecon /dev/camera-pipemgr
+    restorecon /dev/kd_camera_hw
+    restorecon /dev/kd_camera_flashlight
+    restorecon /dev/kd_camera_hw_bus2
+    restorecon /dev/FM50AF
+    restorecon /dev/DW9718AF
+    restorecon /dev/CAM_CAL_DRV
+    restorecon /dev/CAM_CAL_DRV1
+    restorecon /dev/CAM_CAL_DRV2
+
+    # MTK watchdog kicker settings, as on stock.
+    write /proc/wdk "0 20 30"
+
+on property:sys.boot_completed=1
+    write /proc/ppm/policy/userlimit_min_cpu_freq "1 -1"
+    write /proc/ppm/policy/userlimit_min_cpu_core "1 -1"
+    # One-shot stock fuel-gauge helpers.
+    start fuelgauged
+    start batterywarning
+
+# MD1 is started manually: setprop debug.m681.modem.start 1
+
+# MTK GuiExt service, used by the HWC client code in hwc_open_1.
+service guiext-server /system/vendor/bin/guiext-server
+    class core
+    disabled
+    user system
+    group system graphics
+
+# The MTK HWC blocks in hwc_open_1 until the "PQ" binder service is published.
+service pq /system/vendor/bin/pq
+    class core
+    disabled
+    user system
+    group system graphics
+
+on property:init.svc.servicemanager=running
+    # Do not start guiext-server: once GuiExtService is registered, the
+    # prebuilt libgui_ext.so crashes SurfaceFlinger in linkToDeath().
+    #start guiext-server
+
+    # PQ must run: without it the HWC times out after 60 s and reports a 0x0
+    # display.
+    start pq
+
+service nvram_daemon /system/vendor/bin/nvram_daemon
+    class main
+    user root
+    group system
+    seclabel u:r:nvram_daemon:s0
+    disabled
+    oneshot
+
+service NvRAMAgent /system/vendor/bin/nvram_agent_binder
+    class main
+    user system
+    group system
+    seclabel u:r:nvram_agent_binder:s0
+    disabled
+
+service fuelgauged /system/bin/fuelgauged_static
+    class main
+    user system
+    group system
+    disabled
+    oneshot
+
+service batterywarning /system/vendor/bin/batterywarning
+    class main
+    user system
+    group system
+    disabled
+    oneshot
+
+on property:debug.m681.fuelgauged.start=1
+    start fuelgauged
+    start batterywarning
+
+on property:debug.m681.fuelgauged.stop=1
+    stop fuelgauged
+    stop batterywarning
+
+# Optional MTK display/media services, off by default.
+on property:persist.forge.mtk_optional_services=1
+    start ged_srv
+    start aal
+    start vtservice
+
+# MTK USB peripheral mode for adb
+on property:sys.usb.config=adb && property:sys.usb.configfs=0
+    write /sys/devices/platform/mt_usb/cmode 1
+    write /dev/kmsg "Build Station USB: adb cmode=1"
+
+on property:sys.usb.config=adb
+    write /sys/devices/platform/mt_usb/cmode 1
+
+# ADB
+on boot
+    setprop persist.service.adb.enable 1
+    setprop persist.sys.adb.shell /system/bin/sh
+    setprop persist.sys.usb.config adb
+    setprop sys.usb.config adb
+    start adbd

@@ -1,0 +1,15 @@
+# Goodix GF516M fingerprint daemon (m681), installed to /system/etc/init.
+# Matches the stock service: class main, user/group system. /dev/goodix_fp
+# permissions come from ueventd.mt6755.rc.
+service goodixfpd /system/bin/goodixfingerprintd
+    class main
+    user system
+    group system
+    seclabel u:r:fingerprintd:s0
+
+# vendor.fps_hal (class hal) starts before class main and calls openHal() only
+# once; if goodixfpd is not registered by then the HAL stays empty ("Fingerprint
+# HAL id: 0"). Restart the HAL once the daemon is up; this also recovers from a
+# daemon crash.
+on property:init.svc.goodixfpd=running
+    restart vendor.fps_hal

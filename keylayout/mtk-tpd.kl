@@ -1,0 +1,3 @@
+# mtk-tpd (GT9XX touch): KEY_GESTURE (195) is reported for a doze gesture, here
+# only double tap (enabled by power.m3note). Generic.kl has no 195.
+key 195   WAKEUP            WAKE
