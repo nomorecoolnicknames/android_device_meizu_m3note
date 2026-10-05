@@ -88,6 +88,17 @@ BOARD_KERNEL_IMAGE_NAME := kernel
 PRODUCT_COPY_FILES += \
     $(TARGET_PREBUILT_KERNEL):kernel
 
+# Fail the build if a prebuilt kernel does not match its
+# prebuilt-kernel/EXPECTED-<rev>.txt.
+m3note_kernel_check := $(strip \
+    $(shell $(DEVICE_PATH)/tools/check_prebuilt_kernel.sh \
+        $(TARGET_PREBUILT_KERNEL) $(DEVICE_PATH)/prebuilt-kernel/EXPECTED-m681.txt) \
+    $(shell $(DEVICE_PATH)/tools/check_prebuilt_kernel.sh \
+        $(M3NOTE_L681_KERNEL) $(DEVICE_PATH)/prebuilt-kernel/EXPECTED-l681.txt))
+ifneq ($(m3note_kernel_check),)
+$(error $(m3note_kernel_check))
+endif
+
 # OTA: device extension (revision check before any write, boot-l681.img on l681).
 TARGET_RELEASETOOLS_EXTENSIONS := $(DEVICE_PATH)
 
