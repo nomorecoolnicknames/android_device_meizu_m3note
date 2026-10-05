@@ -419,3 +419,8 @@ PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
     log.tag.TeeSyMcClient=S \
     log.tag.vndksupport=S
 
+# Seccomp: the MTK OMX components need the additional vendor policy, otherwise
+# media.omx hits SIGSYS on pselect6.
+PRODUCT_COPY_FILES += \
+    device/meizu/m3note/seccomp/mediacodec.policy:$(TARGET_COPY_OUT_VENDOR)/etc/seccomp_policy/mediacodec.policy
+
