@@ -77,6 +77,9 @@ PRODUCT_PACKAGES += \
 # libril and rild names resolve to ril/.
 PRODUCT_PACKAGES += librilutils
 
+# Audio
+PRODUCT_PACKAGES += audio.primary.default audio.r_submix.default audio.usb.default audio_policy.stub libdrmclearkeyplugin libmockdrmcryptoplugin libaudiopreprocessing
+
 # HIDL HALs
 # Vendor HAL services wrapping the MT6755 blobs.
 PRODUCT_PACKAGES += \
@@ -149,4 +152,20 @@ PRODUCT_COPY_FILES += \
 
 # Symlinks
 PRODUCT_PACKAGES += m3note_vendor_symlinks
+
+# Audio policy
+# Android 13 reads XML only.  One file per board under
+# /vendor/etc/audio/sku_<board>, picked by ro.boot.product.vendor.sku (set by
+# libinit); the M681 variant (no speaker) is also the /vendor/etc fallback.
+AUDIO_POLICY_CFG_DIR := frameworks/av/services/audiopolicy/config
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/audio/audio_policy_configuration_m681.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio/sku_m681/audio_policy_configuration.xml \
+    $(LOCAL_PATH)/audio/audio_policy_configuration_l681.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio/sku_l681/audio_policy_configuration.xml \
+    $(LOCAL_PATH)/audio/audio_policy_configuration_m681.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_configuration.xml \
+    $(AUDIO_POLICY_CFG_DIR)/usb_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/usb_audio_policy_configuration.xml \
+    $(AUDIO_POLICY_CFG_DIR)/r_submix_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/r_submix_audio_policy_configuration.xml \
+    $(AUDIO_POLICY_CFG_DIR)/audio_policy_volumes.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_volumes.xml \
+    $(AUDIO_POLICY_CFG_DIR)/default_volume_tables.xml:$(TARGET_COPY_OUT_VENDOR)/etc/default_volume_tables.xml \
+    $(AUDIO_POLICY_CFG_DIR)/surround_sound_configuration_5_0.xml:$(TARGET_COPY_OUT_VENDOR)/etc/surround_sound_configuration_5_0.xml \
+    frameworks/av/media/libeffects/data/audio_effects.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_effects.xml
 
