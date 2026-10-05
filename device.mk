@@ -126,6 +126,10 @@ PRODUCT_PACKAGES += \
 
 PRODUCT_PACKAGES += gralloc.default
 
+# Vibrator
+# AIDL service over the LED-class /sys/class/leds/vibrator.
+PRODUCT_PACKAGES += android.hardware.vibrator-service.m3note
+
 # Permissions
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.bluetooth.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.bluetooth.xml \
