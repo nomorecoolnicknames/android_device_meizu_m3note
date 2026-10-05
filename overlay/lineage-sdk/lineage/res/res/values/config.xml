@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The only hardware keys are the Home button (mtk-kpd KEY_HOME; on m681
+     also a long press on the Goodix sensor) and the volume rocker. -->
+<resources>
+    <integer name="config_deviceHardwareKeys">65</integer>
+    <!-- Home wakes the screen by default; volume wake and volume answer are
+         opt-in settings. -->
+    <integer name="config_deviceHardwareWakeKeys">65</integer>
+</resources>
