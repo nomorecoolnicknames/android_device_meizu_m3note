@@ -5,6 +5,13 @@ BOARD_SECCOMP_POLICY := $(DEVICE_PATH)/seccomp
 include device/meizu/mt6755-common/BoardConfigCommon.mk
 include vendor/meizu/m681/BoardConfigVendor.mk
 
+# RIL: mtk-ril.so calls pthread_kill() on an exited thread during a SIM switch.
+# Pie bionic aborts on that only for target SDK >= 26.
+TARGET_PROCESS_SDK_VERSION_OVERRIDE := /vendor/bin/hw/rild=25
+TARGET_OTA_ASSERT_DEVICE := m3note,m681,l681,l681h,l91
+TARGET_VENDOR := meizu
+TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/rootdir/fstab.mt6755
+
 # Init
 # Sets the revision profile (m681 | l681) from the device-tree compatible.
 TARGET_INIT_VENDOR_LIB := libinit_m3note
@@ -84,3 +91,10 @@ PRODUCT_COPY_FILES += \
 # OTA: device extension (revision check before any write, boot-l681.img on l681).
 TARGET_RELEASETOOLS_EXTENSIONS := $(DEVICE_PATH)
 
+# RIL
+# MTK HIDL RIL wrapper (vendor/mediatek/ril): the stock MTK rild has no IRadio.
+# mtk-ril.so needs MTK's telephony/ril.h, whose RIL_Env is larger than AOSP's;
+# vendor/mediatek/include contains only telephony headers.
+TARGET_SPECIFIC_HEADER_PATH := vendor/mediatek/include
+BOARD_PROVIDES_RILD := true
+BOARD_PROVIDES_LIBRIL := true

@@ -1,0 +1,14 @@
+# MTK HIDL rild. The MTK rild installs no init script and the AOSP rild is not
+# built; device.mk installs this file as vendor/etc/init/rild.rc.
+#
+# disabled: started by the debug.m681.ril.stack=hidl trigger in init.modem.rc
+# once MD1 is ready. Runs as root for the ccci nodes and NVRAM paths.
+service ril-daemon /vendor/bin/hw/rild
+    # MAL's AT channel: mtkmal only listens on /dev/socket/mal-mfi after it has
+    # connected here, and libril serves this socket.
+    socket rild-mal stream 660 root radio
+    class main
+    user root
+    group radio cache inet misc audio log readproc wakelock system
+    capabilities BLOCK_SUSPEND NET_ADMIN NET_RAW
+    disabled

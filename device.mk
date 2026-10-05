@@ -126,6 +126,83 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/keylayout/ACCDET.kl:system/usr/keylayout/ACCDET.kl \
     $(LOCAL_PATH)/keylayout/mtk-tpd.kl:system/usr/keylayout/mtk-tpd.kl
 
+# Modem
+# Per-revision firmware comes from vendor/meizu/m3note (profile-m681.mk,
+# profile-l681.mk) under the same file names. IMEI lives in NVRAM.
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    rild.libpath=mtk-ril.so \
+    ril.first.md=1 \
+    ril.active.md=12 \
+    ril.current.share_modem=2 \
+    ril.external.md=0 \
+    ril.flightmode.poweroffMD=0 \
+    ril.radiooff.poweroffMD=0 \
+    ril.specific.sm_cause=0 \
+    ril.telephony.mode=0 \
+    ro.telephony.sim.count=2 \
+    ro.telephony.default_network=9,9 \
+    persist.m681.ril.no_ia=1 \
+    persist.radio.default.sim=0 \
+    persist.radio.mobile.data=1,1 \
+    persist.radio.mobile.enable=1,1 \
+    persist.radio.multisim.config=dsds \
+    persist.radio.flashless.fsm=0 \
+    persist.radio.flashless.fsm_cst=0 \
+    persist.radio.flashless.fsm_rw=0 \
+    persist.radio.fd.counter=15 \
+    persist.radio.fd.off.counter=5 \
+    persist.radio.fd.r8.counter=15 \
+    persist.radio.fd.off.r8.counter=5 \
+    persist.radio.mtk_dsbp_support=1 \
+    persist.radio.mtk_ps2_rat=W/G \
+    wifi.interface=wlan0 \
+    wifi.direct.interface=wlan0 \
+    wifi.tethering.interface=ap0 \
+    ro.mtk.no_conn_autostart=true \
+    qemu.hw.mainkeys=0 \
+    ro.mediatek.wlan.wsc=1 \
+    ro.mediatek.wlan.p2p=0 \
+    ro.mediatek.gemini_support=true \
+    ro.mediatek.chip_ver=S01 \
+    ro.mediatek.version.sdk=4 \
+    ro.mtk_agps_app=1 \
+    ro.mtk_bt_support=1 \
+    ro.mtk_c2k_support=0 \
+    ro.mtk.c2k.om.mode=none \
+    ro.mtk.c2k.slot2.support=0 \
+    ro.mtk_dhcpv6c_wifi=1 \
+    ro.mtk_eap_sim_aka=1 \
+    ro.mtk_enable_md1=1 \
+    ro.mtk_enable_md3=0 \
+    ro.mtk_external_sim_support=0 \
+    ro.mtk_gemini_support=1 \
+    ro.mtk_gemini_enhancement=1 \
+    ro.mtk_gps_support=1 \
+    ro.mtk_lte_support=1 \
+    ro.mtk_md_world_mode_support=1 \
+    ro.mtk_modem_monitor_support=1 \
+    ro.mtk_srlte_support=1 \
+    ro.mtk_sim_hot_swap=1 \
+    ro.mtk_sim_hot_swap_common_slot=1 \
+    ro.mtk_trustonic_tee_support=1 \
+    ro.mtk_wapi_support=1 \
+    ro.mtk_wlan_support=1 \
+    ro.mtk_world_phone=1 \
+    ro.mtk_world_phone_policy=0 \
+    ro.mtk_audio_ape_support=1 \
+    ro.mtk_deinterlace_support=1 \
+    ro.mtk_flv_playback_support=1 \
+    ro.mtk_widevine_drm_l3_support=1 \
+    ro.mtk_wmv_playback_support=1 \
+    ro.mtk_wfd_support=1 \
+    ro.mtk_wfd_sink_support=1 \
+    ro.mtk_wfd_sink_uibc_support=1 \
+    persist.mtk.datashaping.support=1 \
+    persist.mtk.wcn.combo.chipid=-1 \
+    persist.mtk.wcn.dynamic.dump=0 \
+    persist.mtk.wcn.fwlog.status=no
+
 # Dexopt: PackageManager aborts if any compiler-filter property is empty.
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
     pm.dexopt.first-boot=verify-at-runtime \
@@ -423,4 +500,24 @@ PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
 # media.omx hits SIGSYS on pselect6.
 PRODUCT_COPY_FILES += \
     device/meizu/m3note/seccomp/mediacodec.policy:$(TARGET_COPY_OUT_VENDOR)/etc/seccomp_policy/mediacodec.policy
+
+# RIL
+# Build the MTK HIDL rild/libril (vendor/mediatek/ril) instead of the AOSP ones;
+# ENABLE_VENDOR_RIL_SERVICE swaps rild, BOARD_PROVIDES_LIBRIL swaps libril.
+ENABLE_VENDOR_RIL_SERVICE := true
+
+PRODUCT_PACKAGES += \
+    rild
+
+# Install the RIL blobs explicitly: they are optional prebuilt modules and
+# rild.libpath is only a runtime dlopen, not a build dependency.
+PRODUCT_PACKAGES += \
+    librilmtk \
+    mtk-ril
+
+# The MTK rild installs no init script; drop any inherited rild.rc and use ours.
+PRODUCT_COPY_FILES := $(filter-out %:$(TARGET_COPY_OUT_VENDOR)/etc/init/rild.rc, \
+    $(PRODUCT_COPY_FILES))
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/rild-mtk-hidl.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/rild.rc
 
