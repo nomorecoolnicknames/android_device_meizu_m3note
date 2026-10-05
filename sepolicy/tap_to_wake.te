@@ -1,0 +1,7 @@
+# power.m3note (passthrough power HAL, in system_server): double tap to wake
+# through the touch gesture node (sysfs_tp_gesture, genfs_contexts).
+allow system_server sysfs_tp_gesture:dir search;
+allow system_server sysfs_tp_gesture:file rw_file_perms;
+# init.project.rc chowns/chmods the same nodes on boot; ueventd may miss them
+# because the attributes appear after the device's uevent.
+allow init sysfs_tp_gesture:file setattr;

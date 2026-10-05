@@ -1,0 +1,4 @@
+# power.m3note (passthrough power HAL, in system_server): boost floors through
+# /sys/devices/system/cpu/cpufreq/policy{0,4}/scaling_min_freq (0664 system);
+# every domain can already read scaling_max_freq/cpuinfo_min_freq.
+allow system_server sysfs_devices_system_cpu:file rw_file_perms;

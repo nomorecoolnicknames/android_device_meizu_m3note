@@ -1,0 +1,6 @@
+allow init MTK_SMI_device:chr_file { getattr relabelfrom relabelto };
+allow init socket_device:sock_file { create setattr unlink };
+
+# tune2fs on /data at "on fs": Pie has no init -> fsck transition, so the rc
+# line runs it as "exec u:r:fsck:s0".
+domain_trans(init, fsck_exec, fsck)

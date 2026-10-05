@@ -39,6 +39,17 @@ AB_OTA_UPDATER := false
 # Split system/vendor build properties (Oreo requirement).
 BOARD_PROPERTY_OVERRIDES_SPLIT_ENABLED := true
 
+# SELinux
+# The kernel supports policy version 30. If the policy fails to load, set
+# POLICYVERS := 29 and drop the allowxperm rules.
+# POLICYVERS := 29
+
+# Platform and vendor policy both live in the device tree.
+BOARD_PLAT_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/plat
+BOARD_SEPOLICY_DIRS += \
+    $(DEVICE_PATH)/sepolicy \
+    $(DEVICE_PATH)/sepolicy/vendor
+
 # Boot image
 # kernel 0x40080000, ramdisk 0x45000000, second 0x40f00000, tags 0x44000000;
 # the stock boot image has an empty board name, so no --board is passed.

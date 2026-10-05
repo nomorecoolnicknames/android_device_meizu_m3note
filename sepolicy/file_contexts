@@ -1,0 +1,107 @@
+/dev/block/mmcblk0p3      u:object_r:custom_block_device:s0
+/dev/block/mmcblk0p7      u:object_r:nvdata_device:s0
+/dev/block/mmcblk0p11     u:object_r:protect_f_device:s0
+/dev/block/mmcblk0p12     u:object_r:protect_s_device:s0
+# AOSP block types for the raw partitions of fstab.mt6755 (no by-name links):
+# fsck, vold, uncrypt and the FRP service need them under enforcing SELinux.
+/dev/block/mmcblk0p1      u:object_r:recovery_block_device:s0
+/dev/block/mmcblk0p2      u:object_r:misc_block_device:s0
+/dev/block/mmcblk0p5      u:object_r:frp_block_device:s0
+/dev/block/mmcblk0p22     u:object_r:boot_block_device:s0
+/dev/block/mmcblk0p29     u:object_r:system_block_device:s0
+/dev/block/mmcblk0p30     u:object_r:cache_block_device:s0
+/dev/block/mmcblk0p31     u:object_r:userdata_block_device:s0
+/custom(/.*)?             u:object_r:custom_file:s0
+/nvcfg(/.*)?              u:object_r:nvcfg_file:s0
+/nvdata(/.*)?             u:object_r:nvdata_file:s0
+/protect_f(/.*)?          u:object_r:protect_f_data_file:s0
+/protect_s(/.*)?          u:object_r:protect_s_data_file:s0
+/dev/aw8737              u:object_r:audio_device:s0
+/dev/aw8738              u:object_r:audio_device:s0
+/dev/camera-isp                                u:object_r:camera_isp_device:s0
+/dev/CAM_CAL_DRV[0-9]*   u:object_r:cam_cal_device:s0
+/dev/gt24c64a_qtech      u:object_r:cam_cal_device:s0
+/dev/gt24c64a_ofilm      u:object_r:cam_cal_device:s0
+/dev/s5k5e8_eeprom       u:object_r:cam_cal_device:s0
+/dev/MAINAF              u:object_r:camera_device:s0
+/dev/MAINAF2             u:object_r:camera_device:s0
+/dev/SUBAF               u:object_r:camera_device:s0
+/dev/GAF001AF            u:object_r:camera_device:s0
+/dev/DW9714AF            u:object_r:camera_device:s0
+/dev/LC898212AF          u:object_r:camera_device:s0
+/dev/BU64745GWZAF        u:object_r:camera_device:s0
+/dev/GT9762AF            u:object_r:camera_device:s0
+/dev/stmvl6180           u:object_r:camera_device:s0
+/dev/ccci.*              u:object_r:ccci_device:s0
+/dev/kd_camera_hw        u:object_r:camera_device:s0
+/dev/kd_camera_flashlight u:object_r:camera_device:s0
+/dev/kd_camera_hw_bus2   u:object_r:camera_device:s0
+/dev/goodix_fp            u:object_r:fingerprint_device:s0
+/dev/goodix_fp_spi        u:object_r:fingerprint_device:s0
+/dev/mobicore-user        u:object_r:mobicore_user_device:s0
+/dev/stpwmt               u:object_r:stpwmt_device:s0
+/dev/stpbt(/.*)?          u:object_r:stpbt_device:s0
+/dev/wmtWifi(/.*)?        u:object_r:wmtWifi_device:s0
+/dev/socket/mrild        u:object_r:rild_socket:s0
+/dev/socket/mrild[0-9]*  u:object_r:rild_socket:s0
+/dev/socket/rild[0-9]*   u:object_r:rild_socket:s0
+/dev/socket/rild[0-9]*-md[0-9]* u:object_r:rild_socket:s0
+/sys/bus/platform/drivers/dev_info/dev_info    u:object_r:sysfs_dev_info:s0
+/system/bin/goodixfingerprintd u:object_r:fingerprintd_exec:s0
+/system/bin/fuelgauged    u:object_r:fuelgauged_exec:s0
+/system/bin/fuelgauged_static u:object_r:fuelgauged_exec:s0
+/system/bin/batterywarning u:object_r:batterywarning_exec:s0
+/(vendor|system/vendor)/bin/batterywarning u:object_r:batterywarning_exec:s0
+/(vendor|system/vendor)/bin/ccci_fsd u:object_r:ccci_fsd_exec:s0
+/(vendor|system/vendor)/bin/ccci_mdinit u:object_r:ccci_mdinit_exec:s0
+/(vendor|system/vendor)/bin/ccci_rpcd u:object_r:ccci_rpcd_exec:s0
+/(vendor|system/vendor)/bin/emdlogger[0-9]+ u:object_r:emdlogger_exec:s0
+/(vendor|system/vendor)/bin/flashlessd u:object_r:flashlessd_exec:s0
+/(vendor|system/vendor)/bin/gsm0710muxd u:object_r:gsm0710muxd_exec:s0
+/(vendor|system/vendor)/bin/gsm0710muxdmd2 u:object_r:gsm0710muxdmd2_exec:s0
+/(vendor|system/vendor)/bin/nvram_daemon        u:object_r:nvram_daemon_exec:s0
+/(vendor|system/vendor)/bin/nvram_agent_binder u:object_r:nvram_agent_binder_exec:s0
+/(vendor|system/vendor)/bin/mdlogger u:object_r:mdlogger_exec:s0
+/(vendor|system/vendor)/bin/mtkrild u:object_r:mtkrild_exec:s0
+/(vendor|system/vendor)/bin/mtkrildmd2 u:object_r:mtkrildmd2_exec:s0
+/(vendor|system/vendor)/bin/permission_check u:object_r:permission_check_exec:s0
+/(vendor|system/vendor)/bin/rilproxy u:object_r:rilproxy_exec:s0
+/(vendor|system/vendor)/bin/statusd u:object_r:statusd_exec:s0
+/(vendor|system/vendor)/bin/terservice u:object_r:terservice_exec:s0
+/(vendor|system/vendor)/bin/viarild u:object_r:viarild_exec:s0
+
+# /vendor is its own partition, so vendor binaries are labelled by their
+# /vendor path. The MTK-named HAL services get the AOSP default HAL domains.
+/(vendor|system/vendor)/bin/hw/android\.hardware\.audio@2\.0-service\.mtk      u:object_r:hal_audio_default_exec:s0
+/(vendor|system/vendor)/bin/hw/android\.hardware\.configstore@1\.1-service\.m3note  u:object_r:hal_configstore_default_exec:s0
+/(vendor|system/vendor)/bin/hw/android\.hardware\.bluetooth@1\.0-service\.mtk  u:object_r:hal_bluetooth_default_exec:s0
+/(vendor|system/vendor)/bin/hw/android\.hardware\.vibrator@1\.0-service\.mtk   u:object_r:hal_vibrator_default_exec:s0
+
+# MTK vendor daemons (sepolicy/mtk_daemons.te)
+/(vendor|system/vendor)/bin/mnld                     u:object_r:mtk_mnld_exec:s0
+/(vendor|system/vendor)/bin/mtk_agpsd                u:object_r:mtk_agpsd_exec:s0
+/(vendor|system/vendor)/bin/wifi2agps                u:object_r:mtk_wifi2agps_exec:s0
+/(vendor|system/vendor)/bin/mtkmal                   u:object_r:mtk_mtkmal_exec:s0
+/(vendor|system/vendor)/bin/wmt_loader               u:object_r:mtk_wmt_loader_exec:s0
+/(vendor|system/vendor)/bin/wmt_launcher             u:object_r:mtk_wmt_launcher_exec:s0
+/(vendor|system/vendor)/bin/stp_dump3                u:object_r:mtk_stp_dump_exec:s0
+/(vendor|system/vendor)/bin/spm_loader               u:object_r:mtk_spm_loader_exec:s0
+/(vendor|system/vendor)/bin/msensord                 u:object_r:mtk_msensord_exec:s0
+/(vendor|system/vendor)/bin/mcDriverDaemon           u:object_r:mtk_mobicore_exec:s0
+/(vendor|system/vendor)/bin/pq                       u:object_r:mtk_pq_exec:s0
+/(vendor|system/vendor)/bin/akmd09911                u:object_r:mtk_akmd09911_exec:s0
+/(vendor|system/vendor)/bin/MPED                     u:object_r:mtk_mped_exec:s0
+/(vendor|system/vendor)/bin/muxreport                u:object_r:mtk_muxreport_exec:s0
+/(vendor|system/vendor)/bin/epdg_wod                 u:object_r:mtk_epdg_wod_exec:s0
+# The l681 msensord (a bind mount keeps the source inode's label).
+/(vendor|system/vendor)/meizu/l681/bin/msensord      u:object_r:mtk_msensord_exec:s0
+
+# Nodes that would otherwise be plain "device"/"socket_device", which AOSP
+# neverallows for every domain.
+/dev/ttyC[0-9]*                                      u:object_r:ccci_device:s0
+/dev/radio(/.*)?                                     u:object_r:radio_device:s0
+/dev/hwmsensor                                       u:object_r:hwmsensor_device:s0
+/dev/socket/mal-mfi                                  u:object_r:mtk_mal_socket:s0
+/dev/socket/rild-mal                                 u:object_r:mtk_mal_socket:s0
+/data/agps_supl(/.*)?                                u:object_r:agps_data_file:s0
+/(vendor|system/vendor)/bin/hw/android\.hardware\.sensors@1\.0-service\.mtk  u:object_r:hal_sensors_default_exec:s0
