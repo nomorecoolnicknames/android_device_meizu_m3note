@@ -110,6 +110,11 @@ PRODUCT_PACKAGES += \
     libwifi-hal-mt66xx \
     wificond
 
+# Display
+# HWC1 module for composer@2.1 (hwcomposer/), selected by
+# ro.hardware.hwcomposer=forge in vendor.prop.
+PRODUCT_PACKAGES += hwcomposer.forge
+
 # Libraries needed by the blobs that are not otherwise in the image.  With
 # BOARD_VNDK_VERSION the vendor namespace cannot see /system/lib*/libstdc++.so.
 PRODUCT_PACKAGES += \

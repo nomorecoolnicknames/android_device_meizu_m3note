@@ -1,0 +1,34 @@
+// hwcomposer.forge: HWC 1.1 over the mt6755 mtk_disp_mgr session ABI (see the
+// header of forge_hwc.c).  The legacy hwcomposer.mt6755 blob cannot present
+// frames on Android 13.
+//
+// Not named hwcomposer.mt6755: that path is taken by the blob, installed via
+// PRODUCT_COPY_FILES.  vendor.prop sets ro.hardware.hwcomposer=forge, which
+// hw_get_module() checks before ro.board.platform.
+//
+// disp_session_uapi.h must stay a byte-for-byte copy of the header the mt6755
+// display driver is built against (drivers/misc/mediatek/video/mt6755/include/
+// disp_session.h, not video/include/disp_session.h).
+//
+// 64-bit only: the only loader is the 64-bit composer@2.1 service, and the
+// 32-bit FRAME_CONFIG compat path is untested.
+//
+// The only other dependency is dlopen("libgralloc_extra.so"), a vendor blob
+// in /vendor/lib64.
+cc_library_shared {
+    name: "hwcomposer.forge",
+    vendor: true,
+    relative_install_path: "hw",
+    compile_multilib: "first",
+    srcs: ["forge_hwc.c"],
+    local_include_dirs: ["."],
+    header_libs: ["libhardware_headers"],
+    shared_libs: [
+        "liblog",
+        "libdl",
+    ],
+    cflags: [
+        "-Wall",
+        "-Wno-unused-parameter",
+    ],
+}
