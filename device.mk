@@ -48,6 +48,10 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/etc/init.m681.thermal.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.m681.thermal.rc \
     $(LOCAL_PATH)/rootdir/etc/init.trustonic.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.trustonic.rc
 
+# Modem and RIL chain (nvram_daemon, ccci_*, gsm0710muxd, rild), M681 only.
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/rootdir/etc/init.m681.modem.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.m681.modem.rc
+
 # Shims
 PRODUCT_PACKAGES += libm3note_n_gui libm3note_n_base libm3note_n_ui libm3note_n_perfservice libm3note_n_region libm3note_n_audio
 # Empty vendor libmedia.so: audio.primary.mt6755.so needs it by name.

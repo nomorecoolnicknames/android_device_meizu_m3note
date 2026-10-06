@@ -1,0 +1,23 @@
+// Link-only stand-ins for the stock RIL libraries, so the Make libril can
+// link librilmtk.so and mtk-ril.so by name.  Installed under
+// /vendor/lib{,64}/m3note-linkstub/, outside the linker search path; the real
+// files come from the vendor profile.  Must stay installable: Soong hides an
+// uninstallable cc module from Make.  Make prebuilts cannot be used, since
+// 32- and 64-bit BUILD_PREBUILT definitions of one name collide.
+cc_library_shared {
+    name: "libm3note_ril_link_rilmtk",
+    stem: "librilmtk",
+    vendor: true,
+    relative_install_path: "m3note-linkstub",
+    srcs: ["rilmtk_link.cpp"],
+    cflags: ["-Wall", "-Werror"],
+}
+
+cc_library_shared {
+    name: "libm3note_ril_link_mtkril",
+    stem: "mtk-ril",
+    vendor: true,
+    relative_install_path: "m3note-linkstub",
+    srcs: ["mtkril_link.c"],
+    cflags: ["-Wall", "-Werror"],
+}

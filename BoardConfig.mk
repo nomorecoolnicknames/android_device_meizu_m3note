@@ -52,6 +52,12 @@ TARGET_COPY_OUT_VENDOR := system/vendor
 BOARD_VNDK_VERSION := current
 BOARD_PROPERTY_OVERRIDES_SPLIT_ENABLED := true
 
+# RIL
+# Build the MTK Oreo HIDL libril and rild from ril/ (IRadio 1.0, drives
+# mtk-ril.so through RIL_Init) instead of hardware/ril.
+BOARD_PROVIDES_LIBRIL := true
+ENABLE_VENDOR_RIL_SERVICE := true
+
 # Kernel
 BOARD_KERNEL_BASE := 0x40078000
 BOARD_KERNEL_PAGESIZE := 2048
@@ -128,6 +134,18 @@ TARGET_LD_SHIM_LIBS += \
     /system/vendor/bin/wmt_launcher|liblog.so \
     /system/vendor/lib/hw/audio.primary.mt6755.so|/system/vendor/lib/libm3note_n_audio.so \
     /system/vendor/lib64/hw/audio.primary.mt6755.so|/system/vendor/lib64/libm3note_n_audio.so
+
+# RIL shims: ifc_ccmni_md_cfg / ifc_set_txq_state for mtk-ril.so and the
+# cutils jstring functions for librilmtk.so.
+TARGET_LD_SHIM_LIBS += \
+    /vendor/lib/mtk-ril.so|/vendor/lib/libm3note_n_ril.so \
+    /vendor/lib64/mtk-ril.so|/vendor/lib64/libm3note_n_ril.so \
+    /vendor/lib/librilmtk.so|/vendor/lib/libm3note_n_ril.so \
+    /vendor/lib64/librilmtk.so|/vendor/lib64/libm3note_n_ril.so \
+    /system/vendor/lib/mtk-ril.so|/system/vendor/lib/libm3note_n_ril.so \
+    /system/vendor/lib64/mtk-ril.so|/system/vendor/lib64/libm3note_n_ril.so \
+    /system/vendor/lib/librilmtk.so|/system/vendor/lib/libm3note_n_ril.so \
+    /system/vendor/lib64/librilmtk.so|/system/vendor/lib64/libm3note_n_ril.so
 
 # liblog for N daemons that call __android_log_* with only libcutils in
 # DT_NEEDED: with full Treble libcutils comes from the VNDK namespace and
