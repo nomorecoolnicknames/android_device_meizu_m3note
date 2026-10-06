@@ -1,0 +1,25 @@
+# Fingerprint HAL (Goodix GF516M).
+#
+# Service name and HIDL instance are unchanged from the LineageOS module:
+# goodixfpd.rc restarts "vendor.fps_hal" once the daemon is up, and
+# hwservicemanager starts this interface lazily when FingerprintService first
+# asks for it.
+#
+# class late_start, not hal: this HAL is useless before goodixfingerprintd
+# (class main) exists.  group: system input uhid as upstream; /dev/goodix_fp
+# is owned by the daemon.
+#
+# "disabled" is deliberate: with the "interface" line hwservicemanager starts
+# the service on the first framework request, well after the daemon is up,
+# and a blob regression cannot turn into a boot-time crash loop.
+#
+# libgoodixfingerprintd_binder.so builds android::Parcel objects on the stack
+# with Nougat's sizeof(Parcel); the vendor blob is patched for the larger
+# current Parcel.
+service vendor.fps_hal /vendor/bin/hw/android.hardware.biometrics.fingerprint@2.0-service.m3note
+    interface android.hardware.biometrics.fingerprint@2.1::IBiometricsFingerprint default
+    class late_start
+    disabled
+    user system
+    group system input uhid
+    writepid /dev/cpuset/system-background/tasks

@@ -1,0 +1,52 @@
+//
+// Copyright (C) 2017 The Android Open Source Project
+// Copyright (C) 2017,2020 The LineageOS Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// Device-local fork of hardware/lineage/interfaces/biometrics/fingerprint/2.0
+// for the Goodix GF516M module.
+//
+// Differences from upstream:
+//   1. BiometricsFingerprint.h declares meizu_fingerprint_device_t, the real
+//      272-byte layout with the four Goodix vendor methods, so authenticate,
+//      cancel, remove, set_active_group and get_authenticator_id land on the
+//      functions they name.
+//   2. service.cpp starts a framework binder threadpool; the daemon's results
+//      arrive on /dev/binder.
+//   3. enumerate() does not call through the null slot.
+//
+// The module name carries a .m3note suffix only to avoid colliding with the
+// upstream module; the service name (vendor.fps_hal) and the HIDL instance
+// (default) are unchanged.
+cc_binary {
+    name: "android.hardware.biometrics.fingerprint@2.0-service.m3note",
+    defaults: ["hidl_defaults"],
+    relative_install_path: "hw",
+    init_rc: ["android.hardware.biometrics.fingerprint@2.0-service.m3note.rc"],
+    srcs: [
+        "service.cpp",
+        "BiometricsFingerprint.cpp",
+    ],
+    shared_libs: [
+        "libutils",
+        "liblog",
+        "libhidlbase",
+        "libhardware",
+        // Framework binder: the Goodix module and its daemon talk over
+        // /dev/binder, and this process has to serve that node itself.
+        "libbinder",
+        "android.hardware.biometrics.fingerprint@2.1",
+    ],
+    proprietary: true,
+}

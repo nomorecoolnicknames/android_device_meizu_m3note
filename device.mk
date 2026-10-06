@@ -137,6 +137,14 @@ PRODUCT_PACKAGES += gralloc.default
 # AIDL service over the LED-class /sys/class/leds/vibrator.
 PRODUCT_PACKAGES += android.hardware.vibrator-service.m3note
 
+# Fingerprint
+# Goodix GF516M on Trustonic TEE: HIDL 2.0 service, init rc and key layout.
+PRODUCT_PACKAGES += android.hardware.biometrics.fingerprint@2.0-service.m3note
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/rootdir/etc/init.goodixfpd.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.goodixfpd.rc \
+    $(LOCAL_PATH)/keylayout/fp-keys.kl:$(TARGET_COPY_OUT_VENDOR)/usr/keylayout/fp-keys.kl \
+    frameworks/native/data/etc/android.hardware.fingerprint.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.fingerprint.xml
+
 # Permissions
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.bluetooth.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.bluetooth.xml \
