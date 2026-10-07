@@ -5,6 +5,72 @@ BOARD_SECCOMP_POLICY := $(DEVICE_PATH)/seccomp
 include device/meizu/mt6755-common/BoardConfigCommon.mk
 include vendor/meizu/m681/BoardConfigVendor.mk
 
+# Shims
+# Legacy libgui/libui symbols for the MTK display and camera blobs
+# (createBufferQueue with IGraphicBufferAlloc, IDumpTunnel::asInterface,
+# GraphicBufferMapper::lock(int)).
+TARGET_LD_SHIM_LIBS += \
+    /vendor/lib/libcam_utils.so|/vendor/lib/libmtkshim_gui.so \
+    /vendor/lib/libcam.client.so|/vendor/lib/libmtkshim_gui.so \
+    /vendor/lib/libcam.camnode.so|/vendor/lib/libmtkshim_gui.so \
+    /vendor/lib/libeffecthal.base.so|/vendor/lib/libmtkshim_gui.so \
+    /vendor/lib/libjni_lomoeffect.so|/vendor/lib/libmtkshim_gui.so \
+    /vendor/lib/libvfb_render.so|/vendor/lib/libmtkshim_gui.so \
+    /vendor/lib/libMtkOmxVenc.so|/vendor/lib/libmtkshim_gui.so \
+    /vendor/lib/libmtk_mmutils.so|/vendor/lib/libmtkshim_gui.so \
+    /vendor/lib/libshowlogo.so|/vendor/lib/libmtkshim_gui.so \
+    /vendor/lib/libgui_ext.so|/vendor/lib/libmtkshim_gui.so \
+    /vendor/lib/libui_ext.so|/vendor/lib/libmtkshim_gui.so \
+    /vendor/lib64/libcam_utils.so|/vendor/lib64/libmtkshim_gui.so \
+    /vendor/lib64/libcam.client.so|/vendor/lib64/libmtkshim_gui.so \
+    /vendor/lib64/libcam.camnode.so|/vendor/lib64/libmtkshim_gui.so \
+    /vendor/lib64/libeffecthal.base.so|/vendor/lib64/libmtkshim_gui.so \
+    /vendor/lib64/libjni_lomoeffect.so|/vendor/lib64/libmtkshim_gui.so \
+    /vendor/lib64/libvfb_render.so|/vendor/lib64/libmtkshim_gui.so \
+    /vendor/lib64/libmtk_mmutils.so|/vendor/lib64/libmtkshim_gui.so \
+    /vendor/lib64/libgui_ext.so|/vendor/lib64/libmtkshim_gui.so \
+    /vendor/lib64/libui_ext.so|/vendor/lib64/libmtkshim_gui.so
+
+# GPS/sensor daemons: libmpe.sensorlistener needs the N libgui SensorManager
+# (moved to libsensor in O), mtk_agpsd needs ICU 56 ucnv_* symbols.
+TARGET_LD_SHIM_LIBS += \
+    /vendor/lib/libmpe.sensorlistener.so|/vendor/lib/libmtkshim_sensor.so \
+    /vendor/bin/mtk_agpsd|/vendor/lib/libmtkshim_icu.so
+
+# Camera: libfeatureio.so of the m681 set needs JpgEncHal::setEncSize(..., bool),
+# its libJpgEncPipe.so has only the 3-argument one (shims/jpgenc/jpgenc_shim.c).
+TARGET_LD_SHIM_LIBS += \
+    /vendor/lib/libfeatureio.so|/vendor/lib/libm3note_jpgenc_shim.so \
+    /vendor/lib64/libfeatureio.so|/vendor/lib64/libm3note_jpgenc_shim.so
+
+# Camera: libskia (N) needs ICU 56, libJpgDecPipe needs the newer DpFragStream
+# API, libeffecthal.base needs GraphicBuffer(ANativeWindowBuffer*, bool).
+TARGET_LD_SHIM_LIBS += \
+    /vendor/lib/libskia.so|/vendor/lib/libm3note_icu56_shim.so \
+    /vendor/lib64/libskia.so|/vendor/lib64/libm3note_icu56_shim.so \
+    /vendor/lib/libJpgDecPipe.so|/vendor/lib/libm3note_dpfrag_shim.so \
+    /vendor/lib64/libJpgDecPipe.so|/vendor/lib64/libm3note_dpfrag_shim.so \
+    /vendor/lib/libeffecthal.base.so|/vendor/lib/libm3note_gbuf_shim.so \
+    /vendor/lib64/libeffecthal.base.so|/vendor/lib64/libm3note_gbuf_shim.so
+
+# Other vendor libraries with unresolved symbols. libJpgEncPipe and
+# libcam.utils.sensorlistener have no DT_NEEDED on libjpeg/libsensor; link them
+# explicitly so every camera load group is self-contained.
+TARGET_LD_SHIM_LIBS += \
+    /vendor/lib/libdrmmtkutil.so|/vendor/lib/libmtkshim_icu.so \
+    /vendor/lib64/libdrmmtkutil.so|/vendor/lib64/libmtkshim_icu.so \
+    /vendor/lib/libcommonpawrapper.so|/vendor/lib/libmtkshim_icu.so \
+    /vendor/lib/libvmp_render.so|/vendor/lib/libmtkshim_gui.so \
+    /vendor/lib64/libvmp_render.so|/vendor/lib64/libmtkshim_gui.so \
+    /vendor/lib/libjni_lomoeffect.so|/vendor/lib/libm3note_gbuf_shim.so \
+    /vendor/lib64/libjni_lomoeffect.so|/vendor/lib64/libm3note_gbuf_shim.so \
+    /vendor/lib/libJpgEncPipe.so|/system/lib/libjpeg.so \
+    /vendor/lib64/libJpgEncPipe.so|/system/lib64/libjpeg.so \
+    /vendor/lib/libcam.utils.sensorlistener.so|/vendor/lib/libmtkshim_sensor.so \
+    /vendor/lib64/libcam.utils.sensorlistener.so|/vendor/lib64/libmtkshim_sensor.so
+
+TARGET_DEVICE := m3note
+
 # RIL: mtk-ril.so calls pthread_kill() on an exited thread during a SIM switch.
 # Pie bionic aborts on that only for target SDK >= 26.
 TARGET_PROCESS_SDK_VERSION_OVERRIDE := /vendor/bin/hw/rild=25

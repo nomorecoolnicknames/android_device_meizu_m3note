@@ -540,3 +540,9 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     hwcomposer.m3note
 
+# Camera ABI shims (see TARGET_LD_SHIM_LIBS in BoardConfig.mk).
+PRODUCT_PACKAGES += \
+    libm3note_jpgenc_shim \
+    libm3note_icu56_shim \
+    libm3note_dpfrag_shim \
+    libm3note_gbuf_shim

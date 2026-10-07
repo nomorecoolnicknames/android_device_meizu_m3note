@@ -1,0 +1,100 @@
+/*
+ * libm3note_dpfrag_shim - the newer DpFragStream API for libJpgDecPipe.so of
+ * the m681 camera set, on top of the older libdpframework.so of the same set.
+ *
+ * libJpgDecPipe.so (pulled in via libcam.device1 -> libcam.camadapter ->
+ * libskia -> libmhalImageCodec) needs:
+ *   DpFragStream::setDstConfig(DP_COLOR_ENUM, int, int, int, int)
+ *   DpFragStream::setDstBuffer(int, unsigned*, unsigned)
+ *   DpFragStream::dequeueFrag(int*, DP_COLOR_ENUM*, void**, int*, int*, int*,
+ *                             int*, int*, int*, bool)
+ * libdpframework.so of the set has only the older forms. The newer forms are
+ * thin variants of the old ones:
+ *   - setDstConfig(5): same stores as setDstConfig(4), but uvPitch is taken
+ *     from the caller instead of being derived from the format;
+ *   - setDstBuffer(fd): same as setDstBuffer(void**), but registers the buffer
+ *     with DpBasicBufferPool::registerBufferFD instead of registerBuffer;
+ *   - dequeueFrag(10): the old dequeueFrag with every argument after va
+ *     shifted by one; the new 5th argument receives an int field of the ring
+ *     buffer pool that the pool constructor and destroyBuffer set to -1.
+ * The field offsets below match the older libdpframework.so. The older pool
+ * has no ring-pool field; the shim reports -1, its default.
+ * Wired with TARGET_LD_SHIM_LIBS for /vendor/lib{,64}/libJpgDecPipe.so.
+ */
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+
+#include <android/log.h>
+
+struct DpFragStream;
+struct DpBasicBufferPool;
+
+#if defined(__LP64__)
+#define DPFRAG_BASIC_POOL 32
+#define DPFRAG_DST_BUF_ID 68
+#define DPFRAG_DST_UV_PITCH 88
+#else
+#define DPFRAG_BASIC_POOL 16
+#define DPFRAG_DST_BUF_ID 48
+#define DPFRAG_DST_UV_PITCH 68
+#endif
+
+#define FIELD(self, off, type) ((type *) ((char *) (self) + (off)))
+
+/* libdpframework.so of the m681 set */
+extern int _ZN12DpFragStream12setDstConfigE13DP_COLOR_ENUMiii(
+        struct DpFragStream *self, int format, int width, int height, int pitch);
+extern int _ZN12DpFragStream11dequeueFragEPiP13DP_COLOR_ENUMPPvS0_S0_S0_S0_S0_b(
+        struct DpFragStream *self, int *bufId, int *format, void **va,
+        int *a, int *b, int *c, int *d, int *e, bool waitBuf);
+extern int _ZN17DpBasicBufferPool16unregisterBufferEi(
+        struct DpBasicBufferPool *pool, int bufId);
+extern int _ZN17DpBasicBufferPool16registerBufferFDEiPjiPi(
+        struct DpBasicBufferPool *pool, int fd, uint32_t *size, int planes,
+        int *bufId);
+
+/* DpFragStream::setDstConfig(DP_COLOR_ENUM, int, int, int, int) */
+int _ZN12DpFragStream12setDstConfigE13DP_COLOR_ENUMiiii(
+        struct DpFragStream *self, int format, int width, int height,
+        int pitch, int uvPitch)
+{
+    int ret = _ZN12DpFragStream12setDstConfigE13DP_COLOR_ENUMiii(
+            self, format, width, height, pitch);
+    *FIELD(self, DPFRAG_DST_UV_PITCH, int) = uvPitch;
+    return ret;
+}
+
+/* DpFragStream::setDstBuffer(int, unsigned*, unsigned) */
+int _ZN12DpFragStream12setDstBufferEiPjj(struct DpFragStream *self, int fd,
+        uint32_t *size, uint32_t planes)
+{
+    struct DpBasicBufferPool *pool =
+            *FIELD(self, DPFRAG_BASIC_POOL, struct DpBasicBufferPool *);
+    int *bufId = FIELD(self, DPFRAG_DST_BUF_ID, int);
+
+    if (planes > 3) {
+        __android_log_print(ANDROID_LOG_ERROR, "m3note-dpfrag",
+                "setDstBuffer(fd): invalid plane count %u", planes);
+        return -1;
+    }
+    if (*bufId != -1) {
+        _ZN17DpBasicBufferPool16unregisterBufferEi(pool, *bufId);
+        *bufId = -1;
+    }
+    return _ZN17DpBasicBufferPool16registerBufferFDEiPjiPi(pool, fd, size,
+            (int) planes, bufId);
+}
+
+/* DpFragStream::dequeueFrag(int*, DP_COLOR_ENUM*, void**, int*, int*, int*,
+ *                           int*, int*, int*, bool) */
+int _ZN12DpFragStream11dequeueFragEPiP13DP_COLOR_ENUMPPvS0_S0_S0_S0_S0_S0_b(
+        struct DpFragStream *self, int *bufId, int *format, void **va,
+        int *ringFd, int *a, int *b, int *c, int *d, int *e, bool waitBuf)
+{
+    int ret = _ZN12DpFragStream11dequeueFragEPiP13DP_COLOR_ENUMPPvS0_S0_S0_S0_S0_b(
+            self, bufId, format, va, a, b, c, d, e, waitBuf);
+    if (ret == 0 && ringFd != NULL)
+        *ringFd = -1;
+    return ret;
+}
