@@ -92,6 +92,21 @@ NUM_FRAMEBUFFER_SURFACE_BUFFERS := 3
 # The legacy MTK HWC does not signal present/retire fences reliably.
 TARGET_RUNNING_WITHOUT_SYNC_FRAMEWORK := true
 
+# Wi-Fi
+# MT6755 conn_soc (WMT) Wi-Fi, MediaTek private driver commands.
+BOARD_WLAN_DEVICE := MediaTek
+WPA_SUPPLICANT_VERSION := VER_0_8_X
+BOARD_WPA_SUPPLICANT_DRIVER := NL80211
+BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_mt66xx
+BOARD_HOSTAPD_DRIVER := NL80211
+BOARD_HOSTAPD_PRIVATE_LIB := lib_driver_cmd_mt66xx
+WIFI_DRIVER_STATE_CTRL_PARAM := /dev/wmtWifi
+WIFI_DRIVER_STATE_ON := 1
+WIFI_DRIVER_STATE_OFF := 0
+WIFI_DRIVER_OPERSTATE_PATH := /sys/class/net/wlan0/operstate
+WIFI_DRIVER_STATE_CTRL_RETRIES := 8
+WIFI_DRIVER_STATE_CTRL_RETRY_DELAY_US := 1000000
+
 # Kernel
 # LK keeps only the first 99 bytes of the header cmdline and appends lcm=,
 # fps=, vram= and androidboot.hardware itself. L681_KERNEL_CMDLINE_EXTRA goes

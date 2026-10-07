@@ -438,6 +438,16 @@ PRODUCT_PACKAGES += \
     libcurl \
     libandroid_net
 
+# Wi-Fi / Bluetooth
+PRODUCT_PACKAGES += \
+    android.hardware.wifi@1.0 \
+    android.hardware.wifi@1.0-service \
+    lib_driver_cmd_mt66xx \
+    hostapd \
+    wificond \
+    wmt_loader \
+    android.hardware.bluetooth@1.0-service.mtk
+
 # VINTF
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/sepolicy/manifest.xml:system/manifest.xml \
