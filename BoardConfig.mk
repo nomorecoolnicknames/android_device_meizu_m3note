@@ -18,6 +18,14 @@ TARGET_INIT_VENDOR_LIB := libinit_m3note
 TARGET_SCREEN_WIDTH := 1080
 TARGET_SCREEN_HEIGHT := 1920
 
+# Display
+# The MTK display blobs are more stable with a 32-bit SurfaceFlinger.
+TARGET_32_BIT_SURFACEFLINGER := true
+# MTK GuiExt/HWC configures the primary display with three buffers.
+NUM_FRAMEBUFFER_SURFACE_BUFFERS := 3
+# The legacy MTK HWC does not signal present/retire fences reliably.
+TARGET_RUNNING_WITHOUT_SYNC_FRAMEWORK := true
+
 # Kernel
 # LK keeps only the first 99 bytes of the header cmdline and appends lcm=,
 # fps=, vram= and androidboot.hardware itself. L681_KERNEL_CMDLINE_EXTRA goes

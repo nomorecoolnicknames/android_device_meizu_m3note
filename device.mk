@@ -378,6 +378,19 @@ PRODUCT_PACKAGES += \
     servicemanager \
     mediaserver
 
+# Graphics
+PRODUCT_PACKAGES += \
+    android.hardware.graphics.allocator@2.0-impl \
+    android.hardware.graphics.allocator@2.0-service \
+    android.hardware.graphics.composer@2.1-impl \
+    android.hardware.graphics.mapper@2.0-impl \
+    android.hardware.memtrack@1.0-impl \
+    android.hardware.renderscript@1.0-impl \
+    libmtkshim_gui \
+    libmtkshim_ui \
+    libmtkshim_sensor \
+    libmtkshim_icu
+
 # Lights: the generic service is a passthrough wrapper and needs the -impl
 # library to load the legacy lights.mt6755.so.
 PRODUCT_PACKAGES += \
@@ -520,4 +533,10 @@ PRODUCT_COPY_FILES := $(filter-out %:$(TARGET_COPY_OUT_VENDOR)/etc/init/rild.rc,
     $(PRODUCT_COPY_FILES))
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rild-mtk-hidl.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/rild.rc
+
+# HWC1 wrapper: the m681 HWC blob never powers the panel down
+# (DispDevice::setPowerMode is a stub); the wrapper adds FBIOBLANK around it.
+# Selected by ro.hardware.hwcomposer=m3note (system.prop).
+PRODUCT_PACKAGES += \
+    hwcomposer.m3note
 
