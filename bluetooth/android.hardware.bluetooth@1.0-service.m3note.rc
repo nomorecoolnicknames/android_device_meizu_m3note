@@ -1,0 +1,12 @@
+# Bluetooth HAL (M681 only), see Android.bp.  As the AOSP default service, but
+# disabled: hwservicemanager starts it lazily for IBluetoothHci/default, which
+# only vintf/manifest_m681.xml declares.  /dev/stpbt appears only after
+# wmt_loader (init.m681.connectivity.rc).
+service vendor.bluetooth-1-0-m3note /vendor/bin/hw/android.hardware.bluetooth@1.0-service.m3note
+    interface android.hardware.bluetooth@1.0::IBluetoothHci default
+    class hal
+    capabilities BLOCK_SUSPEND NET_ADMIN SYS_NICE
+    user bluetooth
+    group bluetooth
+    task_profiles HighPerformance
+    disabled

@@ -1,0 +1,39 @@
+// Bluetooth (M681 only).
+//
+// The 64-bit HIDL HAL android.hardware.bluetooth@1.0-impl dlopen()s
+// libbt-vendor.so, but the stock firmware has only a 32-bit one, so a 64-bit
+// libbt-vendor.so forwards to the 64-bit libbluetooth_mtk.so.  See bt_vendor.c.
+//
+// The service is a copy of hardware/interfaces/bluetooth/1.0/default/service.cpp
+// with its own rc: disabled + interface line, so hwservicemanager starts it only
+// when the framework asks for IBluetoothHci/default, which is declared in
+// vintf/manifest_m681.xml only.
+
+cc_library_shared {
+    name: "libm3note_btvendor",
+    stem: "libbt-vendor",
+    vendor: true,
+    compile_multilib: "64",
+    cflags: ["-Wno-unused-parameter"],
+    srcs: ["bt_vendor.c"],
+    shared_libs: ["liblog", "libdl"],
+}
+
+cc_binary {
+    name: "android.hardware.bluetooth@1.0-service.m3note",
+    defaults: ["hidl_defaults"],
+    relative_install_path: "hw",
+    vendor: true,
+    init_rc: ["android.hardware.bluetooth@1.0-service.m3note.rc"],
+    srcs: ["service.cpp"],
+    shared_libs: [
+        "liblog",
+        "libcutils",
+        "libdl",
+        "libbase",
+        "libutils",
+        "libhardware",
+        "libhidlbase",
+        "android.hardware.bluetooth@1.0",
+    ],
+}
