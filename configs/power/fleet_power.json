@@ -1,0 +1,31 @@
+{
+  "Nodes": {
+    "ll_floor": {
+      "Type": "cpufreq_floor",
+      "Policy": "/sys/devices/system/cpu/cpufreq/policy0"
+    },
+    "big_floor": {
+      "Type": "cpufreq_floor",
+      "Policy": "/sys/devices/system/cpu/cpufreq/policy4"
+    }
+  },
+  "Requests": {
+    "interaction": {
+      "HoldMs": 1000,
+      "Set": {
+        "big_floor": "pct:70",
+        "ll_floor": "pct:70"
+      }
+    },
+    "launch": {
+      "MaxMs": 1500,
+      "Set": {
+        "big_floor": "max",
+        "ll_floor": "max"
+      }
+    }
+  },
+  "Adpf": {
+    "Enabled": false
+  }
+}

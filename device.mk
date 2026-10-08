@@ -391,6 +391,21 @@ PRODUCT_PACKAGES += \
     libmtkshim_sensor \
     libmtkshim_icu
 
+# Health / thermal / power
+PRODUCT_PACKAGES += \
+    android.hardware.health@1.0-impl \
+    android.hardware.health@1.0-service \
+    android.hardware.thermal@1.0-impl \
+    android.hardware.thermal@1.0-service \
+    android.hardware.power@1.0-impl \
+    power.m3note
+
+# Power HAL boosts: cpufreq floors on policy0/policy4 for touch and app launch,
+# clamped to the current ceiling. Disable at runtime with
+# setprop debug.vendor.power.fleet.off interaction,launch (or none).
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/power/fleet_power.json:$(TARGET_COPY_OUT_VENDOR)/etc/power/fleet_power.json
+
 # Lights: the generic service is a passthrough wrapper and needs the -impl
 # library to load the legacy lights.mt6755.so.
 PRODUCT_PACKAGES += \
