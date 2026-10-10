@@ -565,6 +565,11 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     hwcomposer.m3note
 
+# configstore 1.1 with primaryDisplayOrientation from ro.sf.hwrotation, which
+# Pie SurfaceFlinger otherwise ignores. Overrides the stock service.
+PRODUCT_PACKAGES += \
+    android.hardware.configstore@1.1-service.m3note
+
 # Camera ABI shims (see TARGET_LD_SHIM_LIBS in BoardConfig.mk).
 PRODUCT_PACKAGES += \
     libm3note_jpgenc_shim \

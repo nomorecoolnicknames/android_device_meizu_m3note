@@ -1,0 +1,5 @@
+# Same service as hardware/interfaces/configstore/1.1/default, own binary (Android.mk).
+service vendor.configstore-hal /vendor/bin/hw/android.hardware.configstore@1.1-service.m3note
+    class hal animation
+    user system
+    group system
