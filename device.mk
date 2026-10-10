@@ -91,6 +91,17 @@ PRODUCT_COPY_FILES += \
     $(M681_EFFECTIVE_KERNEL_PREBUILT):kernel
 endif
 
+# Audio
+# libaudio_param_parser.so searches /sdcard/.audio_param, /odm/etc/audio_param,
+# /vendor/etc/audio_param and /system/etc/audio_param; mirror the calibration
+# set to /system/etc/audio_param as well.
+M681_AUDIO_PARAM_SRC := $(wildcard vendor/meizu/m681/proprietary/vendor/etc/audio_param/*)
+PRODUCT_COPY_FILES += \
+    $(foreach f,$(M681_AUDIO_PARAM_SRC),$(f):system/etc/audio_param/$(notdir $(f)))
+# Legacy MTK audio_policy.conf, also probed at /system/etc.
+PRODUCT_COPY_FILES += \
+    vendor/meizu/m681/proprietary/vendor/etc/audio_policy.conf:system/etc/audio_policy.conf
+
 # Vendor runtime fixes:
 # - mnld is a 32-bit vendor binary and aborts without libcurl.
 # - The Goodix fingerprint HAL links libgf_* from the system linker namespace.
@@ -416,6 +427,19 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     android.hardware.vibrator@1.0-service.mtk
 
+# Audio (.mtk-service from vendor/mediatek/hidl/audio)
+PRODUCT_PACKAGES += \
+    android.hardware.audio@2.0-impl \
+    android.hardware.audio@2.0-service.mtk \
+    android.hardware.audio.effect@2.0-impl \
+    libaudiopolicymanagerdefault \
+    libaudio-resampler \
+    libnbaio \
+    libtinyalsa \
+    libtinycompress \
+    libtinyxml \
+    libfs_mgr
+
 # Sensors: wrappers around the blob HAL. m681 uses sensors.mt6755.so
 # (InvenSense MPL), l681 uses sensors.l681.so (hwmsen) via ro.hardware.sensors.
 PRODUCT_PACKAGES += \
@@ -558,6 +582,12 @@ PRODUCT_COPY_FILES := $(filter-out %:$(TARGET_COPY_OUT_VENDOR)/etc/init/rild.rc,
     $(PRODUCT_COPY_FILES))
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rild-mtk-hidl.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/rild.rc
+
+# Audio debugging tools (userdebug/eng only).
+PRODUCT_PACKAGES_DEBUG += \
+    tinymix \
+    tinycap \
+    tinyplay
 
 # HWC1 wrapper: the m681 HWC blob never powers the panel down
 # (DispDevice::setPowerMode is a stub); the wrapper adds FBIOBLANK around it.
