@@ -178,6 +178,53 @@ TARGET_LD_SHIM_LIBS += \
     /vendor/bin/thermalloadalgod|liblog.so \
     /system/vendor/bin/thermalloadalgod|liblog.so
 
+# Camera: the provider's dlopen() roots, camera.mt6755.so and
+# libcam_platform.so, get the N libutils/libbinder set, N libui
+# (GraphicBuffer, PropertyMap) and libjpeg shims; a shim at the root applies
+# to the whole load group.  libJpgDecPipe and libfeatureio get the newer
+# DpFragStream / JpgEncHal::setEncSize forms.  The provider is 32-bit only.
+TARGET_LD_SHIM_LIBS += \
+    /vendor/lib/hw/camera.mt6755.so|/vendor/lib/libm681shim_base.so \
+    /vendor/lib/hw/camera.mt6755.so|/vendor/lib/libmtkshim_ui.so \
+    /vendor/lib/hw/camera.mt6755.so|/vendor/lib/libm3note_n_camera.so \
+    /vendor/lib/hw/camera.mt6755.so|/vendor/lib/libm3note_n_camera_jpeg.so \
+    /vendor/lib64/hw/camera.mt6755.so|/vendor/lib64/libm681shim_base.so \
+    /vendor/lib64/hw/camera.mt6755.so|/vendor/lib64/libmtkshim_ui.so \
+    /vendor/lib64/hw/camera.mt6755.so|/vendor/lib64/libm3note_n_camera.so \
+    /vendor/lib64/hw/camera.mt6755.so|/vendor/lib64/libm3note_n_camera_jpeg.so \
+    /vendor/lib/libcam_platform.so|/vendor/lib/libm681shim_base.so \
+    /vendor/lib/libcam_platform.so|/vendor/lib/libmtkshim_ui.so \
+    /vendor/lib/libcam_platform.so|/vendor/lib/libm3note_n_camera.so \
+    /vendor/lib/libcam_platform.so|/vendor/lib/libm3note_n_camera_jpeg.so \
+    /vendor/lib64/libcam_platform.so|/vendor/lib64/libm681shim_base.so \
+    /vendor/lib64/libcam_platform.so|/vendor/lib64/libmtkshim_ui.so \
+    /vendor/lib64/libcam_platform.so|/vendor/lib64/libm3note_n_camera.so \
+    /vendor/lib64/libcam_platform.so|/vendor/lib64/libm3note_n_camera_jpeg.so \
+    /vendor/lib/libJpgDecPipe.so|/vendor/lib/libm3note_n_dpfrag.so \
+    /vendor/lib64/libJpgDecPipe.so|/vendor/lib64/libm3note_n_dpfrag.so \
+    /vendor/lib/libfeatureio.so|/vendor/lib/libm3note_n_jpgenc.so \
+    /vendor/lib64/libfeatureio.so|/vendor/lib64/libm3note_n_jpgenc.so \
+    /system/vendor/lib/hw/camera.mt6755.so|/system/vendor/lib/libm681shim_base.so \
+    /system/vendor/lib/hw/camera.mt6755.so|/system/vendor/lib/libmtkshim_ui.so \
+    /system/vendor/lib/hw/camera.mt6755.so|/system/vendor/lib/libm3note_n_camera.so \
+    /system/vendor/lib/hw/camera.mt6755.so|/system/vendor/lib/libm3note_n_camera_jpeg.so \
+    /system/vendor/lib64/hw/camera.mt6755.so|/system/vendor/lib64/libm681shim_base.so \
+    /system/vendor/lib64/hw/camera.mt6755.so|/system/vendor/lib64/libmtkshim_ui.so \
+    /system/vendor/lib64/hw/camera.mt6755.so|/system/vendor/lib64/libm3note_n_camera.so \
+    /system/vendor/lib64/hw/camera.mt6755.so|/system/vendor/lib64/libm3note_n_camera_jpeg.so \
+    /system/vendor/lib/libcam_platform.so|/system/vendor/lib/libm681shim_base.so \
+    /system/vendor/lib/libcam_platform.so|/system/vendor/lib/libmtkshim_ui.so \
+    /system/vendor/lib/libcam_platform.so|/system/vendor/lib/libm3note_n_camera.so \
+    /system/vendor/lib/libcam_platform.so|/system/vendor/lib/libm3note_n_camera_jpeg.so \
+    /system/vendor/lib64/libcam_platform.so|/system/vendor/lib64/libm681shim_base.so \
+    /system/vendor/lib64/libcam_platform.so|/system/vendor/lib64/libmtkshim_ui.so \
+    /system/vendor/lib64/libcam_platform.so|/system/vendor/lib64/libm3note_n_camera.so \
+    /system/vendor/lib64/libcam_platform.so|/system/vendor/lib64/libm3note_n_camera_jpeg.so \
+    /system/vendor/lib/libJpgDecPipe.so|/system/vendor/lib/libm3note_n_dpfrag.so \
+    /system/vendor/lib64/libJpgDecPipe.so|/system/vendor/lib64/libm3note_n_dpfrag.so \
+    /system/vendor/lib/libfeatureio.so|/system/vendor/lib/libm3note_n_jpgenc.so \
+    /system/vendor/lib64/libfeatureio.so|/system/vendor/lib64/libm3note_n_jpgenc.so
+
 # Malloc
 # N camera blobs allocate GraphicBuffer with the N size (136 bytes on arm)
 # while the A13 object is 160; jemalloc rounds 136 up to 160, Scudo does not.
