@@ -446,6 +446,12 @@ PRODUCT_PACKAGES += \
     android.hardware.sensors@1.0-impl.mtk \
     android.hardware.sensors@1.0-service.mtk
 
+# Keymaster / DRM
+PRODUCT_PACKAGES += \
+    android.hardware.keymaster@3.0-impl \
+    android.hardware.drm@1.0-impl \
+    android.hardware.drm@1.0-service
+
 # Camera / GNSS / media
 # The camera provider service is passthrough and needs the -impl library.
 PRODUCT_PACKAGES += \
@@ -544,6 +550,11 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     vendor/meizu/m681/proprietary/lib/libkeymaster1.so:system/lib/libkeymaster1.so \
     vendor/meizu/m681/proprietary/lib64/libkeymaster1.so:system/lib64/libkeymaster1.so
+
+# libsoftkeymaster is a DT_NEEDED-only dependency of the Goodix blobs (it is
+# not libsoftkeymasterdevice). 64-bit only: there is no 32-bit consumer.
+PRODUCT_COPY_FILES += \
+    vendor/meizu/m681/proprietary/lib64/libsoftkeymaster.so:system/lib64/libsoftkeymaster.so
 
 # goodixfingerprintd init script; it also restarts vendor.fps_hal once the
 # daemon is up, otherwise the HAL loses the start-up race and stays empty.
