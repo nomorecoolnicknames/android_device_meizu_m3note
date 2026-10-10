@@ -477,6 +477,10 @@ PRODUCT_PACKAGES += \
     libcurl \
     libandroid_net
 
+# Fingerprint
+PRODUCT_PACKAGES += \
+    android.hardware.biometrics.fingerprint@2.0-service
+
 # Wi-Fi / Bluetooth
 PRODUCT_PACKAGES += \
     android.hardware.wifi@1.0 \
@@ -533,6 +537,18 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
 PRODUCT_COPY_FILES += \
     vendor/meizu/m681/proprietary/vendor/lib/libalsautils.so:$(TARGET_COPY_OUT_VENDOR)/lib/libalsautils.so \
     vendor/meizu/m681/proprietary/vendor/lib64/libalsautils.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libalsautils.so
+
+# Fingerprint: the Goodix blobs carry vestigial DT_NEEDED entries on
+# libkeymaster1/libsoftkeymaster (removed with patchelf in the vendor tree).
+# libkeymaster1 stays because libsoftkeymasterdevice binds symbols from it.
+PRODUCT_COPY_FILES += \
+    vendor/meizu/m681/proprietary/lib/libkeymaster1.so:system/lib/libkeymaster1.so \
+    vendor/meizu/m681/proprietary/lib64/libkeymaster1.so:system/lib64/libkeymaster1.so
+
+# goodixfingerprintd init script; it also restarts vendor.fps_hal once the
+# daemon is up, otherwise the HAL loses the start-up race and stays empty.
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/rootdir/goodixfpd.rc:system/etc/init/goodixfpd.rc
 
 # Zygote: GL preload opens /proc/ged, which fails the post-fork fd sanitizer.
 # Set in build.prop and rootdir/default.prop (prop.default is not loaded here).
