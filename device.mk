@@ -188,6 +188,13 @@ PRODUCT_COPY_FILES += \
     $(AUDIO_POLICY_CFG_DIR)/surround_sound_configuration_5_0.xml:$(TARGET_COPY_OUT_VENDOR)/etc/surround_sound_configuration_5_0.xml \
     frameworks/av/media/libeffects/data/audio_effects.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_effects.xml
 
+# Keymaster
+# Both boards declare the AOSP software keymaster 4.0: the MobiCore TEE
+# keymaster does not work with this kernel, and a declared HAL that never
+# registers would block keystore and boot.  The per-SKU VINTF manifests are
+# set by DEVICE_MANIFEST_SKUS in BoardConfig.mk.
+PRODUCT_PACKAGES += android.hardware.keymaster@4.0-service
+
 # Power
 # AIDL Power HAL with cpufreq floors on policy0/policy4: app launch -> max
 # (1.5 s cap), fling -> 70 % of max, ADPF -> floor while frames miss target.
