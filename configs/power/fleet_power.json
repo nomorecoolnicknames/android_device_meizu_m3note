@@ -1,0 +1,14 @@
+{
+  "Nodes": {
+    "ll_floor":  {"Type": "cpufreq_floor", "Policy": "/sys/devices/system/cpu/cpufreq/policy0"},
+    "big_floor": {"Type": "cpufreq_floor", "Policy": "/sys/devices/system/cpu/cpufreq/policy4"}
+  },
+  "Requests": {
+    "interaction": {"IgnoreZeroDuration": true},
+    "fling":       {"FlingMinMs": 100, "Set": {"big_floor": "pct:70", "ll_floor": "pct:70"}},
+    "launch":      {"MaxMs": 1500, "Set": {"big_floor": "max", "ll_floor": "max"}}
+  },
+  "Adpf": {"Enabled": true, "ReportRateMs": 100, "StaleMs": 150, "LowWater": 0.8,
+           "Levels": [{"big_floor": "pct:70"}, {"big_floor": "max", "ll_floor": "pct:70"}]},
+  "Supported": {"Boosts": ["INTERACTION"], "Modes": ["LAUNCH", "INTERACTIVE", "DISPLAY_INACTIVE", "LOW_POWER"]}
+}

@@ -188,3 +188,11 @@ PRODUCT_COPY_FILES += \
     $(AUDIO_POLICY_CFG_DIR)/surround_sound_configuration_5_0.xml:$(TARGET_COPY_OUT_VENDOR)/etc/surround_sound_configuration_5_0.xml \
     frameworks/av/media/libeffects/data/audio_effects.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_effects.xml
 
+# Power
+# AIDL Power HAL with cpufreq floors on policy0/policy4: app launch -> max
+# (1.5 s cap), fling -> 70 % of max, ADPF -> floor while frames miss target.
+# Touch boost stays in the kernel.  Config: configs/power/fleet_power.json.
+PRODUCT_PACKAGES += \
+    android.hardware.power-service.meizu
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/power/fleet_power.json:$(TARGET_COPY_OUT_VENDOR)/etc/power/fleet_power.json
