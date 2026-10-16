@@ -68,3 +68,10 @@ ro.hardware.hwcomposer=m3note
 
 # Power HAL with double tap to wake (/sys/devices/mx_tsp/gesture_control).
 ro.hardware.power=m3note
+
+# Launch boosts (both floors = max: big 1196 / LL 689 MHz at the fixed VPROC 1.000 V
+# of the 4.4 freq-only line) stay off until a guarded test: an L681 build hung within
+# 1-3 s of the first WAKEUP + unlock with all boosts live (cause not established).
+# Interaction (pct:70, 871/494 MHz) stays on.
+# A/B without a rebuild: setprop debug.vendor.power.fleet.off none.
+ro.vendor.power.fleet.off=launch
