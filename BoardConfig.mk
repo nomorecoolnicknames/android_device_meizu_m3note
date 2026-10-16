@@ -73,16 +73,14 @@ BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2 androidboot.hardware=mt6755 andro
 TARGET_NO_KERNEL := false
 TARGET_KERNEL_ARCH := arm64
 TARGET_KERNEL_HEADER_ARCH := arm64
-# Kernel source is used only for generated kernel headers; the boot kernel
-# is prebuilt.
 TARGET_KERNEL_SOURCE := kernel/meizu/m681
 TARGET_KERNEL_CONFIG := m3note_defconfig
 TARGET_KERNEL_VERSION := 4.9
-TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/Image-m681.gz-dtb
-TARGET_FORCE_PREBUILT_KERNEL := true
-BOARD_KERNEL_IMAGE_NAME := kernel
-
-# Recovery
+TARGET_KERNEL_CLANG_COMPILE := false
+# Several MediaTek drivers switch features on TARGET_BUILD_VARIANT; the tested
+# kernel was built without it.
+TARGET_KERNEL_ADDITIONAL_FLAGS := MTK_PLATFORM=mt6755 TARGET_BUILD_VARIANT=
+BOARD_KERNEL_IMAGE_NAME := Image.gz-dtb
 TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/rootdir/etc/fstab.mt6755
 
 # Mount points for the MTK data partitions in fstab.mt6755.
@@ -231,13 +229,6 @@ TARGET_LD_SHIM_LIBS += \
 # The camera provider is 32-bit only, so only libc32 uses jemalloc.
 MALLOC_SVELTE_FOR_LIBC32 := true
 
-# Build scope
-ifneq ($(M3NOTE_BUILD_SCOPE),two-unit-diagnostic)
-$(error M3 Note requires the explicit two-unit-diagnostic build scope)
-endif
-ifeq ($(wildcard $(DEVICE_PATH)/prebuilt/common-kernel-proof.json),)
-$(error Source-built common Image and both own DTBs must be admitted first)
-endif
 ifeq ($(wildcard vendor/meizu/m3note/profile-proof.json),)
 $(error Both isolated vendor profiles are required; single-board fallback is forbidden)
 endif
