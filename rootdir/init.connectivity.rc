@@ -116,6 +116,10 @@ service mnld /vendor/bin/mnld
     group gps inet misc sdcard_rw sdcard_r media_rw system radio
     socket mnld stream 660 gps system
     disabled
+    # mnld traps itself (udf in mnld_gps_start_timeout) when a GPS start does not
+    # finish in 15 s; the "GPS" wakelock it had asked system_server for is never
+    # released and blocked suspend for 47 min on the L681.
+    onrestart write /sys/power/wake_unlock GPS
 
 service MPED /vendor/bin/MPED
     class main
