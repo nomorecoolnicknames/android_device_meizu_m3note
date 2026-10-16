@@ -7,13 +7,15 @@
 #    of ../linkstubs: libril imports RIL_queryMyChannelId,
 #    RIL_queryMyProxyIdByThread, RIL_requestProxyTimedCallback,
 #    android::RIL_startRILProxys, android::enqueue from librilmtk and
-#    getIaCache, acquire/release_wake_lock from mtk-ril.
-#  - mtk_ril_unsol_commands.h comes from ../proprietary/libril.
-#  - The M681 mtk-ril has roamingProtocol in RIL_InitialAttachApn, so
-#    MTK_RIL_IAA_NO_ROAMING_PROTOCOL is not set.
-#  - MTK_RIL_ENV_REQUEST_ACK: the 7-slot N RIL_Env of the M681 mtk-ril.
-#  - ../include is this port's own copy of the RIL headers and comes before
-#    the ril_headers exported by librilutils.
+#    getIaCache, acquire/release_wake_lock from mtk-ril (nm of the m5c build);
+#  - mtk_ril_unsol_commands.h from vendor/meizu/m3note/ril/libril (MediaTek-proprietary);
+#  - -DMTK_RIL_IAA_NO_ROAMING_PROTOCOL dropped: the M681 mtk-ril reads a
+#    pointer at RIL_InitialAttachApn+16 and an int at +24
+#    (requestSetInitialAttachApn: ldr x24,[x27,#16] / ldr w26,[x27,#24]),
+#    i.e. it HAS roamingProtocol (the layout ril.h and ril_service.cpp
+#    describe as "m681");
+#  - -DMTK_RIL_ENV_REQUEST_ACK: the 7-slot N RIL_Env of the M681 mtk-ril
+#    (include/telephony/ril.h, rild/rild.c).
 #
 # Guarded by TARGET_DEVICE: Make parses this file for every product.
 
@@ -41,10 +43,10 @@ ril_shared_libs := \
     android.hardware.radio.deprecated@1.0 \
     libhidlbase
 
-# ../proprietary/libril: mtk_ril_unsol_commands.h, included by ril.cpp.
+# vendor/meizu/m3note/ril/libril: mtk_ril_unsol_commands.h, included by ril.cpp.
 ril_inc := $(LOCAL_PATH)/../include \
     external/nanopb-c \
-    $(LOCAL_PATH)/../proprietary/libril
+    vendor/meizu/m3note/ril/libril
 
 # M681: RIL_InitialAttachApn WITH roamingProtocol, 7-slot RIL_Env (header).
 ril_cflags := -Wno-unused-parameter -DANDROID_SIM_COUNT_2 -DANDROID_MULTI_SIM -DMTK_HARDWARE \
