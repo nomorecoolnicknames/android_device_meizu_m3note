@@ -81,9 +81,8 @@ TARGET_KERNEL_CLANG_COMPILE := false
 # kernel was built without it.
 TARGET_KERNEL_ADDITIONAL_FLAGS := MTK_PLATFORM=mt6755 TARGET_BUILD_VARIANT=
 BOARD_KERNEL_IMAGE_NAME := Image.gz-dtb
-TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/rootdir/etc/fstab.mt6755
-
-# Mount points for the MTK data partitions in fstab.mt6755.
+TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/rootdir/etc/recovery.fstab
+# Mount points of the MTK data partitions in fstab.mt6755 (labels: sepolicy/vendor/file_contexts).
 BOARD_ROOT_EXTRA_FOLDERS := nvdata protect_f protect_s
 BOARD_SUPPRESS_SECURE_ERASE := true
 BOARD_CHARGER_SHOW_PERCENTAGE := true
