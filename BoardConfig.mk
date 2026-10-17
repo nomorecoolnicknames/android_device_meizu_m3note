@@ -233,7 +233,6 @@ ifeq ($(wildcard vendor/meizu/m3note/profile-proof.json),)
 $(error Both isolated vendor profiles are required; single-board fallback is forbidden)
 endif
 include $(DEVICE_PATH)/BoardConfigProfiles.mk
-TARGET_RECOVERY_DEVICE_MODULES += m3note_probe
 BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
 # AOSP builds fingerprint.default.so at the same path as the vendor placeholder
 # (the Goodix HAL is bind-mounted over it at boot).
