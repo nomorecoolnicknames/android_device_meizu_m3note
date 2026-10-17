@@ -17,8 +17,9 @@ DEVICE_MANIFEST_FILE := $(LOCAL_PATH)/manifest.xml
 
 # Packages
 PRODUCT_PACKAGES += libwpa_client wpa_supplicant hostapd android.hardware.health@2.1-impl android.hardware.health@2.1-service
-
-# Configs
+# OTA board check (releasetools/releasetools.py)
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/releasetools/check_board.sh:install/bin/check_board.sh
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/etc/fstab.mt6755:$(TARGET_COPY_OUT_RAMDISK)/fstab.mt6755 \
     $(LOCAL_PATH)/rootdir/etc/fstab.mt6755:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.mt6755 \
